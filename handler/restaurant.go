@@ -6,9 +6,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2"
+	_ "gopkg.in/mgo.v2/bson"
 	"myapp/model"
 	"net/http"
-	"time"
 )
 
 func (h *Handler) CreateRestaurant(c echo.Context) error {
@@ -44,68 +44,28 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
+	fmt.Println(res)
 	//here we should check the password!
 	if res.Password != manager.Password {
 		return c.JSON(http.StatusUnauthorized, "password is incorrect.")
 	}
-
-	////-----
-	//// JWT
-	////-----
-	//
-	//// Create token
-	//token := jwt.New(jwt.SigningMethodHS256)
-	//
-	//// Set claims
-	//claims := token.Claims.(jwt.MapClaims)
-	//claims["id"] = manager.ID
-	//claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-	//
-	//// Generate encoded token and send it as response
-	//manager.Token, err = token.SignedString([]byte(Key))
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//manager.Password = "" // Don't send password
-	//return c.JSON(http.StatusOK, manager)
-
-	//-----
-	// JWT
-	//-----
-
-	// Create token
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = res.ID
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-
-	fmt.Println(res)
-	fmt.Println("start claims part")
-	fmt.Println(claims)
-	fmt.Println(claims["id"])
-	fmt.Println("start claims part")
-	// Generate encoded token and send it as response
-	res.Token, err = token.SignedString([]byte(Key))
-	if err != nil {
-		return err
-	}
-
-	res.Password = "" // Don't send password
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, newRestaurantResponse(res))
 }
 
 func (h *Handler) EditRestaurantInfo(c echo.Context) (err error) {
+	//fmt.Println(c)
+	//managerEmail := restaurantManagerEmailFromToken(c)
+	//managerEmail1 := restaurantManagerEmailFromToken1(c)
+	////id := c.Param("id")
+	//
+	//fmt.Println(managerEmail)
+	//fmt.Println(managerEmail1)
+	//fmt.Println("arman" + stringFieldFromToken(c, "email"))
+	//fmt.Println("tempppp" + userPhoneFromToken(c))
+	//// Add a follower to user
+
 	fmt.Println(c)
-	managerEmail := restaurantManagerEmailFromToken(c)
-	//id := c.Param("id")
-
-	fmt.Println(managerEmail)
-	// Add a follower to user
-
-	return c.JSON(http.StatusOK, managerEmail)
+	return c.JSON(http.StatusOK, stringFieldFromToken(c,"username"))
 }
 
 func restaurantManagerEmailFromToken(c echo.Context) string {
@@ -113,6 +73,32 @@ func restaurantManagerEmailFromToken(c echo.Context) string {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	return claims["id"].(string)
+}
+
+func restaurantManagerEmailFromToken1(c echo.Context) string {
+	fmt.Println()
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	return claims["email"].(string)
+}
+
+func userPhoneFromToken(c echo.Context) string {
+	fmt.Println()
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+
+	if _, ok := claims["phone"]; !ok {
+		return ""
+	}
+	return claims["phone"].(string)
+}
+
+func userIDFromToken(c echo.Context) uint {
+	id, ok := c.Get("user").(uint)
+	if !ok {
+		return 0
+	}
+	return id
 }
 
 func stringFieldFromToken(c echo.Context, field string) string {
