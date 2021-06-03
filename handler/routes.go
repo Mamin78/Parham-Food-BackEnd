@@ -12,28 +12,27 @@ const (
 	signUp     = "/signup"
 	login      = "/login"
 	edit       = "/edit"
+
+	user = "/user"
 )
 
 func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	g.GET("/", h.BaseRouter)
 
-	g.POST(manager, h.CreateRestaurantManager)
-	g.POST(manager+restaurant, h.CreateRestaurant)
-	g.POST(manager+login, h.CreateRestaurantManager)
+	g.POST(signUp+manager, h.CreateRestaurantManager)
+	g.POST(login+manager, h.ManagerLogin)
 
-	g.POST("/signup", h.userSignUp)
-	g.POST("/userlogin", h.UserLogin)
+	g.POST(signUp+user, h.CreateRestaurantManager)
+	g.POST(login+user, h.ManagerLogin)
 
 	jwtMiddleware := middleware.JWT(utils.JWTSecret)
-	userJWTMiddleware := middleware.USER(utils.JWTSecret)
+	//userJWTMiddleware := middleware.USER(utils.JWTSecret)
 
-	manager := g.Group("", jwtMiddleware)
+	manager := g.Group(manager, jwtMiddleware)
+	manager.POST(restaurant, h.CreateRestaurant)
 	manager.GET(edit, h.EditRestaurantInfo)
 
-	user := g.Group("/user", jwtMiddleware)
-	user.GET("", h.EditRestaurantInfo)
-
-	users := g.Group("/users", userJWTMiddleware)
-	users.GET("", h.EditUser)
+	//users := g.Group("/users", userJWTMiddleware)
+	//users.GET("", h.EditUser)
 }

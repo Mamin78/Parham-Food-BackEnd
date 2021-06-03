@@ -32,7 +32,7 @@ func main() {
 	ordersDb := db.SetupOrdersDb(mongoClient)
 	commentsDb := db.SetupCommentsDb(mongoClient)
 	ManagerCommentsDb := db.SetupManagerCommentsDb(mongoClient)
-	g := r.Group("")
+	g := r.Group("/api")
 	userStore := store.NewUserStore(usersDb)
 	restaurantStore := store.NewRestaurantStore(restaurantsDb)
 	foodStore := store.NewFoodStore(foodsDb)

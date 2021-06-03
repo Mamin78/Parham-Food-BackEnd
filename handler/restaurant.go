@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2"
 	_ "gopkg.in/mgo.v2/bson"
 	"myapp/model"
@@ -22,7 +21,7 @@ func (h *Handler) CreateRestaurantManager(c echo.Context) error {
 	}
 
 	res := new(model.Restaurant)
-	res.ID = primitive.NewObjectID()
+	//res.ID = primitive.NewObjectID()
 	res.Email = manager.Email
 	res.Password = manager.Password
 
@@ -41,20 +40,19 @@ func (h *Handler) CreateRestaurant(c echo.Context) error {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusUnauthorized, "invalid Manager")
 		}
-		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, "Bad Request1")
 	}
 
 	res.Email = managerEmail
 	err = h.restaurantStore.AddInformation(managerEmail, res)
 	if err != nil {
-		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, "Bad Request2")
 	}
+	res.Password = ""
 	return c.JSON(http.StatusCreated, res)
 }
 
-func (h *Handler) Login(c echo.Context) error {
+func (h *Handler) ManagerLogin(c echo.Context) error {
 	manager := new(model.BaseManager)
 	if err := c.Bind(&manager); err != nil {
 		return c.JSON(http.StatusBadRequest, "Bad Request")
@@ -77,17 +75,6 @@ func (h *Handler) Login(c echo.Context) error {
 }
 
 func (h *Handler) EditRestaurantInfo(c echo.Context) (err error) {
-	//fmt.Println(c)
-	//managerEmail := restaurantManagerEmailFromToken(c)
-	//managerEmail1 := restaurantManagerEmailFromToken1(c)
-	////id := c.Param("id")
-	//
-	//fmt.Println(managerEmail)
-	//fmt.Println(managerEmail1)
-	//fmt.Println("arman" + stringFieldFromToken(c, "email"))
-	//fmt.Println("tempppp" + userPhoneFromToken(c))
-	//// Add a follower to user
-
 	fmt.Println(c)
 	return c.JSON(http.StatusOK, stringFieldFromToken(c, "email"))
 }
