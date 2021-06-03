@@ -21,6 +21,7 @@ func SetupUsersDb(mongoClient *mongo.Client) *mongo.Collection {
 func SetupRestaurantsDb(mongoClient *mongo.Client) *mongo.Collection {
 	restaurantsDb := mongoClient.Database(DataBaseName).Collection("restaurants")
 	createUniqueIndices(restaurantsDb, "email")
+	createUniqueIndices(restaurantsDb, "name")
 	return restaurantsDb
 }
 

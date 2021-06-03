@@ -34,7 +34,11 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			auth, err := extractor(c)
+			if auth == "" && config.Skipper != nil && config.Skipper(c) {
+				return next(c)
+			}
 			if err != nil {
+				fmt.Println(err.Error())
 				return c.JSON(http.StatusForbidden, utils.NewError(ErrJWTInvalid))
 			}
 
@@ -70,7 +74,7 @@ func jwtFromHeader(header string, authScheme string) jwtExtractor {
 	return func(c echo.Context) (string, error) {
 		auth := c.Request().Header.Get(header)
 		l := len(authScheme)
-		if len(auth) > l+1 && auth[:l] == authScheme {
+		if len(auth) >= l+1 && auth[:l] == authScheme {
 			return auth[l+1:], nil
 		}
 		return "", ErrJWTMissing

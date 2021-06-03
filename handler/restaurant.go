@@ -81,35 +81,65 @@ func (h *Handler) ManagerLogin(c echo.Context) error {
 func (h *Handler) EditRestaurantInfo(c echo.Context) (err error) {
 	managerEmail := stringFieldFromToken(c, "email")
 	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
-
-	newRes := model.NewRestaurant(res)
-	if err := c.Bind(&newRes); err != nil {
+	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusUnauthorized, "invalid Manager")
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, "Bad Request1")
+	}
+	newRes := model.NewRestaurant(res)
+	if err := c.Bind(&newRes); err != nil {
+		return c.JSON(http.StatusBadRequest, "Bad Request2")
 	}
 	err = h.restaurantStore.UpdateInformation(managerEmail, newRes)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, "Bad Request3")
 	}
 	newRes.Password = ""
 	return c.JSON(http.StatusCreated, newRes)
 }
 
 func (h *Handler) GetRestaurantInfo(c echo.Context) (err error) {
-	resId := c.Param("restaurant_id")
-	fmt.Println(resId)
-	res, err := h.restaurantStore.GetRestaurantById(resId)
+	resName := c.Param("restaurant_name")
+	res, err := h.restaurantStore.GetRestaurantByName(resName)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
 		}
-		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 	res.Password = ""
+
+	temp, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	fmt.Println(temp)
 	return c.JSON(http.StatusCreated, res)
+}
+
+func (h *Handler) GetAllFoodsOfRestaurant(c echo.Context) (err error) {
+	resName := c.Param("restaurant_name")
+	res, err := h.restaurantStore.GetRestaurantByName(resName)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	res.Password = ""
+
+	foods, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	return c.JSON(http.StatusCreated, foods)
 }
 
 func stringFieldFromToken(c echo.Context, field string) string {

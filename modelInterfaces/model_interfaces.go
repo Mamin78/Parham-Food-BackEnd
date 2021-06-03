@@ -1,6 +1,9 @@
 package modelInterfaces
 
-import "myapp/model"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"myapp/model"
+)
 
 type UserStore interface {
 	CreateUser(restaurant *model.User) error
@@ -12,9 +15,14 @@ type RestaurantStore interface {
 	UpdateInformation(managerEmail string, res *model.Restaurant) error
 	GetRestaurantByManagerEmail(email string) (*model.Restaurant, error)
 	GetRestaurantById(id string) (*model.Restaurant, error)
+	GetRestaurantByName(name string) (*model.Restaurant, error)
+	AddFoodToRestaurant(resName string, food *model.Food, res *model.Restaurant) error
 }
 
 type FoodStore interface {
+	CreateRestaurant(food *model.Food) error
+	GetAllFoodsOfRestaurant(resName string) (*model.Restaurant, error)
+	GetAllFoodsOfRestaurantByID(resID primitive.ObjectID) ([]model.Food, error)
 }
 
 type OrderStore interface {

@@ -39,8 +39,22 @@ func (rs *RestaurantStore) GetRestaurantById(id string) (*model.Restaurant, erro
 	return &u, err
 }
 
+func (rs *RestaurantStore) GetRestaurantByName(name string) (*model.Restaurant, error) {
+	var u model.Restaurant
+	err := rs.db.FindOne(context.TODO(), bson.M{"name": name}).Decode(&u)
+	return &u, err
+}
+
 func (rs *RestaurantStore) UpdateInformation(managerEmail string, res *model.Restaurant) error {
 	newRes := bson.M{"name": res.Name, "area": res.Area, "address": res.Address, "service_area": res.ServiceArea, "start_working_hours": res.StartWorkingHours, "end_working_hours": res.EndWorkingHours, "base_food_price": res.BaseFoodPrice, "base_food_time": res.BaseFoodTime}
 	_, err := rs.db.UpdateOne(context.TODO(), bson.M{"email": managerEmail}, bson.M{"$set": newRes})
 	return err
 }
+
+func (rs *RestaurantStore) AddFoodToRestaurant(resName string, food *model.Food, res *model.Restaurant) error {
+	res.Foods = append(res.Foods, food.ID)
+	newRes := bson.M{"foods": res.Foods}
+	_, err := rs.db.UpdateOne(context.TODO(), bson.M{"name": resName}, bson.M{"$set": newRes})
+	return err
+}
+
