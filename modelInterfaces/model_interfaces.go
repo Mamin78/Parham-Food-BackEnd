@@ -11,6 +11,7 @@ type RestaurantStore interface {
 	CreateRestaurant(restaurant *model.Restaurant) error
 	UpdateInformation(managerEmail string, res *model.Restaurant) error
 	GetRestaurantByManagerEmail(email string) (*model.Restaurant, error)
+	GetRestaurantById(id string) (*model.Restaurant, error)
 }
 
 type FoodStore interface {

@@ -2,6 +2,7 @@ package store
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/net/context"
 	"myapp/model"
@@ -25,6 +26,16 @@ func (rs *RestaurantStore) CreateRestaurant(restaurant *model.Restaurant) error 
 func (rs *RestaurantStore) GetRestaurantByManagerEmail(email string) (*model.Restaurant, error) {
 	var u model.Restaurant
 	err := rs.db.FindOne(context.TODO(), bson.M{"email": email}).Decode(&u)
+	return &u, err
+}
+
+func (rs *RestaurantStore) GetRestaurantById(id string) (*model.Restaurant, error) {
+	var u model.Restaurant
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return &u, nil
+	}
+	err = rs.db.FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&u)
 	return &u, err
 }
 

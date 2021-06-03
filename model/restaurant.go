@@ -19,7 +19,7 @@ type BaseRestaurant struct {
 }
 
 type Restaurant struct {
-	//ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 
 	Email    string `json:"email,omitempty" bson:"email"`
 	Password string `json:"password" bson:"password"`
@@ -39,6 +39,7 @@ type Restaurant struct {
 
 func NewRestaurant(res *Restaurant) *Restaurant {
 	r := new(Restaurant)
+	r.ID = res.ID
 	r.Email = res.Email
 	r.Name = res.Name
 	r.Area = res.Area

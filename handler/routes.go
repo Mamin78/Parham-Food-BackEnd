@@ -7,11 +7,12 @@ import (
 )
 
 const (
-	manager    = "/manager"
-	restaurant = "/restaurant"
-	signUp     = "/signup"
-	login      = "/login"
-	edit       = "/edit"
+	manager      = "/manager"
+	restaurant   = "/restaurant"
+	signUp       = "/signup"
+	login        = "/login"
+	edit         = "/edit"
+	restaurantId = "/:restaurant_id"
 
 	user = "/user"
 )
@@ -25,6 +26,9 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	g.POST(signUp+user, h.CreateRestaurantManager)
 	g.POST(login+user, h.ManagerLogin)
+
+	res := g.Group(restaurant)
+	res.GET(restaurantId, h.GetRestaurantInfo)
 
 	jwtMiddleware := middleware.JWT(utils.JWTSecret)
 	//userJWTMiddleware := middleware.USER(utils.JWTSecret)
