@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "github.com/labstack/echo/v4"
-	_ "github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"myapp/db"
@@ -13,6 +12,8 @@ import (
 )
 
 func main() {
+	//dt := time.Now()
+	//fmt.Println(dt.Format("15:04:05"))
 	port := os.Getenv("PORT")
 	if port == "" {
 		// default Port

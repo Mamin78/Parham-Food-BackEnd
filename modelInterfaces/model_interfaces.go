@@ -9,6 +9,7 @@ type UserStore interface {
 
 type RestaurantStore interface {
 	CreateRestaurant(restaurant *model.Restaurant) error
+	AddInformation(managerEmail string, res *model.Restaurant) error
 	GetRestaurantByManagerEmail(email string) (*model.Restaurant, error)
 }
 

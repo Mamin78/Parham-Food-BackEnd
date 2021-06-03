@@ -9,7 +9,7 @@ type BaseRestaurant struct {
 	ManagerEmail string             `json:"manager_email" bson:"manager_email"`
 
 	Name         string `json:"name" bson:"name"`
-	WorkingHours string `json:"working-hours" bson:"working_hours"`
+	WorkingHours string `json:"working_hours" bson:"working_hours"`
 	Region       string `json:"region" bson:"region"`
 	Address      string `json:"address" bson:"address"`
 
@@ -24,14 +24,15 @@ type Restaurant struct {
 	Email    string `json:"email,omitempty" bson:"email"`
 	Password string `json:"password" bson:"password"`
 
-	Name         string `json:"name" bson:"name"`
-	WorkingHours string `json:"working-hours" bson:"working_hours"`
-	Region       string `json:"region" bson:"region"`
-	Address      string `json:"address" bson:"address"`
-
-	Token string `json:"token" bson:"-"`
+	Name              string  `json:"name" bson:"name"`
+	Area              int     `json:"area" bson:"area"`
+	Address           string  `json:"address" bson:"address"`
+	ServiceArea       []int   `json:"service_area" bson:"service_area"`
+	StartWorkingHours string  `json:"start_working_hours" bson:"start_working_hours"`
+	EndWorkingHours   string  `json:"end_working_hours" bson:"end_working_hours"`
+	BaseFoodPrice     float64 `json:"base_food_price" bson:"base_food_price"`
+	BaseFoodTime      float64 `json:"base_food_time" bson:"base_food_time"`
 
 	Foods  *[]primitive.ObjectID `json:"foods" bson:"foods"`
 	Orders *[]primitive.ObjectID `json:"orders" bson:"orders"`
 }
-
