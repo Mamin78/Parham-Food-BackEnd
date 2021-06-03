@@ -7,7 +7,6 @@ import (
 type User struct {
 	Name        string  `json:"name" bson:"name"`
 	PhoneNumber string  `json:"phone_number,omitempty" bson:"phone_number"`
-	Email       string  `json:"email" bson:"email"`
 	Password    string  `json:"password" bson:"password"`
 	Credit      float64 `json:"credit" bson:"credit"`
 

@@ -30,18 +30,25 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	g.POST("/restaurant", h.CreateRestaurant)
 	g.POST(login, h.Login)
+
+	g.POST("/signup", h.userSignUp)
+	g.POST("/userlogin", h.UserLogin)
 	//g.POST("/temp", h.EditRestaurantInfo)
 	//jwtMiddleware := middleware.JWT(utils.JWTSecret)
 	//globalMiddleware := middleware.Global(utils.JWTSecret)
 	//g.POST(signUp, h.SignUp)
 	//g.POST(login, h.Login)
 	jwtMiddleware := middleware.JWT(utils.JWTSecret)
+	userJWTMiddleware := middleware.USER(utils.JWTSecret)
 	//guestUsers := g.Group("/users")
 	//guestUsers.POST("", h.CreateRestaurant)
 	//guestUsers.POST("/login", h.Login)
 
 	user := g.Group("/user", jwtMiddleware)
 	user.GET("", h.EditRestaurantInfo)
+
+	users := g.Group("/users", userJWTMiddleware)
+	users.GET("", h.EditUser)
 	//user.PUT("", h.UpdateUser)
 	//
 	//profiles := g.Group("/profiles", jwtMiddleware)

@@ -13,6 +13,7 @@ require (
 	github.com/swaggo/echo-swagger v1.1.0
 	go.mongodb.org/mongo-driver v1.5.2
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	golang.org/x/tools v0.0.0-20201207182000-5679438983bd
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
