@@ -19,7 +19,6 @@ type (
 )
 
 var (
-	USERErrJWTMissing = echo.NewHTTPError(http.StatusUnauthorized, "missing or malformed jwt")
 	USERErrJWTInvalid = echo.NewHTTPError(http.StatusForbidden, "invalid or expired jwt")
 )
 
@@ -34,6 +33,9 @@ func USERJWTFromHeader(config JWTConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			auth, err := extractor(c)
+			if auth == "" && config.Skipper != nil && config.Skipper(c) {
+				return next(c)
+			}
 			if err != nil {
 				return c.JSON(http.StatusForbidden, utils.NewError(USERErrJWTInvalid))
 			}
@@ -64,15 +66,3 @@ func USERJWTFromHeader(config JWTConfig) echo.MiddlewareFunc {
 		}
 	}
 }
-
-//// jwtFromHeader returns a `jwtExtractor` that extracts token from the request header.
-//func jwtFromHeader(header string, authScheme string) jwtExtractor {
-//	return func(c echo.Context) (string, error) {
-//		auth := c.Request().Header.Get(header)
-//		l := len(authScheme)
-//		if len(auth) > l+1 && auth[:l] == authScheme {
-//			return auth[l+1:], nil
-//		}
-//		return "", USERErrJWTMissing
-//	}
-//}

@@ -29,8 +29,8 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.POST(manager+signUp, h.CreateRestaurantManager)
 	g.POST(manager+login, h.ManagerLogin)
 
-	g.POST(user+signUp, h.CreateRestaurantManager)
-	g.POST(user+login, h.ManagerLogin)
+	g.POST(user+signUp, h.userSignUp)
+	g.POST(user+login, h.UserLogin)
 
 	//other parts
 	manager := g.Group(manager, middleware.JWTWithConfig(

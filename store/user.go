@@ -22,8 +22,8 @@ func (rs *UserStore) CreateUser(restaurant *model.User) error {
 	return err
 }
 
-func (rs *UserStore) GetUserByPhone(email string) (*model.User, error) {
+func (rs *UserStore) GetUserByPhone(phoneNumber string) (*model.User, error) {
 	var u model.User
-	err := rs.db.FindOne(context.TODO(), bson.M{"phone_number": email}).Decode(&u)
+	err := rs.db.FindOne(context.TODO(), bson.M{"phone_number": phoneNumber}).Decode(&u)
 	return &u, err
 }
