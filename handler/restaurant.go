@@ -44,7 +44,7 @@ func (h *Handler) CreateRestaurant(c echo.Context) error {
 	}
 
 	res.Email = managerEmail
-	err = h.restaurantStore.AddInformation(managerEmail, res)
+	err = h.restaurantStore.UpdateInformation(managerEmail, res)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Bad Request2")
 	}
@@ -75,8 +75,29 @@ func (h *Handler) ManagerLogin(c echo.Context) error {
 }
 
 func (h *Handler) EditRestaurantInfo(c echo.Context) (err error) {
-	fmt.Println(c)
-	return c.JSON(http.StatusOK, stringFieldFromToken(c, "email"))
+	managerEmail := stringFieldFromToken(c, "email")
+	fmt.Println("emailllll" + managerEmail)
+	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
+
+	fmt.Println("ressssss " )
+	fmt.Println( res)
+	newRes := model.NewRestaurant(res)
+	fmt.Println("newressssss " )
+	fmt.Println( newRes)
+	if err := c.Bind(&newRes); err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request1")
+	}
+	fmt.Println("newwwwwwwwwwressssss " )
+	fmt.Println( newRes)
+	err = h.restaurantStore.UpdateInformation(managerEmail, newRes)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Bad Request2")
+	}
+	newRes.Password = ""
+	return c.JSON(http.StatusCreated, newRes)
 }
 
 func stringFieldFromToken(c echo.Context, field string) string {

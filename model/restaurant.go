@@ -36,3 +36,17 @@ type Restaurant struct {
 	Foods  *[]primitive.ObjectID `json:"foods" bson:"foods"`
 	Orders *[]primitive.ObjectID `json:"orders" bson:"orders"`
 }
+
+func NewRestaurant(res *Restaurant) *Restaurant {
+	r := new(Restaurant)
+	r.Email = res.Email
+	r.Name = res.Name
+	r.Area = res.Area
+	r.Address = res.Address
+	r.ServiceArea = res.ServiceArea
+	r.StartWorkingHours = res.StartWorkingHours
+	r.EndWorkingHours = res.EndWorkingHours
+	r.BaseFoodTime = res.BaseFoodTime
+	r.BaseFoodPrice = res.BaseFoodPrice
+	return r
+}

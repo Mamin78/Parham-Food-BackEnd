@@ -31,7 +31,7 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	manager := g.Group(manager, jwtMiddleware)
 	manager.POST(restaurant, h.CreateRestaurant)
-	manager.GET(edit, h.EditRestaurantInfo)
+	manager.PUT(edit, h.EditRestaurantInfo)
 
 	//users := g.Group("/users", userJWTMiddleware)
 	//users.GET("", h.EditUser)

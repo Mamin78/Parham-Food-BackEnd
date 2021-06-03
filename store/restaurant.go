@@ -28,7 +28,7 @@ func (rs *RestaurantStore) GetRestaurantByManagerEmail(email string) (*model.Res
 	return &u, err
 }
 
-func (rs *RestaurantStore) AddInformation(managerEmail string, res *model.Restaurant) error {
+func (rs *RestaurantStore) UpdateInformation(managerEmail string, res *model.Restaurant) error {
 	newRes := bson.M{"name": res.Name, "area": res.Area, "address": res.Address, "service_area": res.ServiceArea, "start_working_hours": res.StartWorkingHours, "end_working_hours": res.EndWorkingHours, "base_food_price": res.BaseFoodPrice, "base_food_time": res.BaseFoodTime}
 	_, err := rs.db.UpdateOne(context.TODO(), bson.M{"email": managerEmail}, bson.M{"$set": newRes})
 	return err
