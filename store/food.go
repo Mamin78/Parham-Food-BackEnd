@@ -60,3 +60,42 @@ func (fs *FoodStore) GetAllFoodsOfRestaurantByID(resID primitive.ObjectID) ([]mo
 	fmt.Println("foods")
 	return uu, err
 }
+
+func (fs *FoodStore) DisableFoodByID(foodId string) error {
+	oid, err := primitive.ObjectIDFromHex(foodId)
+	if err != nil {
+		return nil
+	}
+	newRes := bson.M{"can_be_ordered": false}
+	_, err = fs.db.UpdateOne(context.TODO(), bson.M{"_id": oid}, bson.M{"$set": newRes})
+	return err
+}
+
+func (fs *FoodStore) EnableFoodByID(foodId string) error {
+	oid, err := primitive.ObjectIDFromHex(foodId)
+	if err != nil {
+		return nil
+	}
+	newRes := bson.M{"can_be_ordered": true}
+	_, err = fs.db.UpdateOne(context.TODO(), bson.M{"_id": oid}, bson.M{"$set": newRes})
+	return err
+}
+
+func (fs *FoodStore) DeleteFoodByID(foodId string) error {
+	oid, err := primitive.ObjectIDFromHex(foodId)
+	if err != nil {
+		return nil
+	}
+	_, err = fs.db.DeleteOne(context.TODO(), bson.M{"_id": oid})
+	return err
+}
+
+func (fs *FoodStore) GetFoodByID(id string) (*model.Food, error) {
+	var u model.Food
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return &u, nil
+	}
+	err = fs.db.FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&u)
+	return &u, err
+}

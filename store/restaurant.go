@@ -58,3 +58,19 @@ func (rs *RestaurantStore) AddFoodToRestaurant(resName string, food *model.Food,
 	return err
 }
 
+func (rs *RestaurantStore) DeleteFoodFromRestaurant(foodID string, res *model.Restaurant) error {
+	oid, err := primitive.ObjectIDFromHex(foodID)
+	if err != nil {
+		return err
+	}
+
+	newFoods := &[]primitive.ObjectID{}
+	for _, fid := range res.Foods {
+		if fid != oid {
+			*newFoods = append(*newFoods, fid)
+		}
+	}
+
+	_, err = rs.db.UpdateOne(context.TODO(), bson.M{"_id": res.ID}, bson.M{"$set": bson.M{"foods": newFoods}})
+	return err
+}

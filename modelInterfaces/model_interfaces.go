@@ -17,12 +17,17 @@ type RestaurantStore interface {
 	GetRestaurantById(id string) (*model.Restaurant, error)
 	GetRestaurantByName(name string) (*model.Restaurant, error)
 	AddFoodToRestaurant(resName string, food *model.Food, res *model.Restaurant) error
+	DeleteFoodFromRestaurant(foodID string, res *model.Restaurant) error
 }
 
 type FoodStore interface {
 	CreateRestaurant(food *model.Food) error
 	GetAllFoodsOfRestaurant(resName string) (*model.Restaurant, error)
 	GetAllFoodsOfRestaurantByID(resID primitive.ObjectID) ([]model.Food, error)
+	EnableFoodByID(foodId string) error
+	DisableFoodByID(foodId string) error
+	GetFoodByID(id string) (*model.Food, error)
+	DeleteFoodByID(foodId string) error
 }
 
 type OrderStore interface {

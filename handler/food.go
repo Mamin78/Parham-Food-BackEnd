@@ -10,10 +10,8 @@ import (
 )
 
 func (h *Handler) CreateFood(c echo.Context) error {
-	resName := c.Param("restaurant_name")
-	fmt.Println(resName)
-
-	res, err := h.restaurantStore.GetRestaurantByName(resName)
+	managerEmail := stringFieldFromToken(c, "email")
+	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
@@ -38,5 +36,91 @@ func (h *Handler) CreateFood(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
+	return c.JSON(http.StatusCreated, food)
+}
+
+func (h *Handler) DisableFood(c echo.Context) error {
+	foodID := c.Param("food_id")
+	fmt.Println(foodID)
+
+	err := h.foodsStore.DisableFoodByID(foodID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
+	food, err := h.foodsStore.GetFoodByID(foodID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	return c.JSON(http.StatusCreated, food)
+}
+
+func (h *Handler) EnableFood(c echo.Context) error {
+	foodID := c.Param("food_id")
+	fmt.Println(foodID)
+
+	err := h.foodsStore.EnableFoodByID(foodID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
+	food, err := h.foodsStore.GetFoodByID(foodID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	return c.JSON(http.StatusCreated, food)
+}
+
+func (h *Handler) DeleteFood(c echo.Context) error {
+	managerEmail := stringFieldFromToken(c, "email")
+
+	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	res.Password = ""
+
+	foodID := c.Param("food_id")
+	fmt.Println(foodID)
+
+	food, err := h.foodsStore.GetFoodByID(foodID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
+	err = h.foodsStore.DeleteFoodByID(foodID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
+	err = h.restaurantStore.DeleteFoodFromRestaurant(foodID,res)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
 	return c.JSON(http.StatusCreated, food)
 }
