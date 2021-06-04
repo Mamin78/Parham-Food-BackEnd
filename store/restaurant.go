@@ -74,3 +74,10 @@ func (rs *RestaurantStore) DeleteFoodFromRestaurant(foodID string, res *model.Re
 	_, err = rs.db.UpdateOne(context.TODO(), bson.M{"_id": res.ID}, bson.M{"$set": bson.M{"foods": newFoods}})
 	return err
 }
+
+func (rs *RestaurantStore) AddOrderToRestaurantByID(newOrder *model.Order, res *model.Restaurant) error {
+	res.Orders = append(res.Orders, newOrder.ID)
+	newRes := bson.M{"orders": res.Orders}
+	_, err := rs.db.UpdateOne(context.TODO(), bson.M{"_id": res.ID}, bson.M{"$set": newRes})
+	return err
+}

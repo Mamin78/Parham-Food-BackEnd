@@ -14,7 +14,7 @@ type User struct {
 	Area        int     `json:"area" bson:"area"`
 	Address     string  `json:"address" bson:"address"`
 
-	Orders *[]primitive.ObjectID `json:"orders" bson:"orders"`
+	Orders []primitive.ObjectID `json:"orders" bson:"orders"`
 }
 
 func NewUser(res *User) *User {

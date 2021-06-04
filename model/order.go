@@ -8,7 +8,7 @@ import (
 type Order struct {
 	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	RestaurantID primitive.ObjectID `json:"restaurant_id,omitempty" bson:"restaurant_id"`
-	UserPhone    string             `json:"user_phone" bson:"user_phone"`
+	UserID       primitive.ObjectID `json:"user_id,omitempty" bson:"user_id"`
 
 	State       int       `json:"state" bson:"state"`
 	Price       float64   `json:"price" bson:"price"`

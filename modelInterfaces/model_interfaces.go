@@ -6,9 +6,16 @@ import (
 )
 
 type UserStore interface {
-	CreateUser(restaurant *model.User) error
-	GetUserByPhone(email string) (*model.User, error)
+	CreateUser(user *model.User) error
+	GetUserByPhone(phoneNumber string) (*model.User, error)
 	UpdateUserInfoByPhone(phoneNumber string, user *model.User) error
+
+	GetUserByID(userID string) (*model.User, error)
+	UpdateUserInfoByID(userID string, user *model.User) error
+	UpdateUserCredit(userID primitive.ObjectID, newCredit float64) error
+
+	//AddOrderToUserByPhone(phone string, newOrder *model.Order, user *model.User) error
+	AddOrderToUserByID(newOrder *model.Order, user *model.User) error
 }
 
 type RestaurantStore interface {
@@ -19,6 +26,7 @@ type RestaurantStore interface {
 	GetRestaurantByName(name string) (*model.Restaurant, error)
 	AddFoodToRestaurant(resName string, food *model.Food, res *model.Restaurant) error
 	DeleteFoodFromRestaurant(foodID string, res *model.Restaurant) error
+	AddOrderToRestaurantByID(newOrder *model.Order, res *model.Restaurant) error
 }
 
 type FoodStore interface {
@@ -33,6 +41,7 @@ type FoodStore interface {
 }
 
 type OrderStore interface {
+	CreateOrder(order *model.Order) error
 }
 
 type CommentStore interface {

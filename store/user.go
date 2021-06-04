@@ -18,8 +18,8 @@ func NewUserStore(db *mongo.Collection) *UserStore {
 	}
 }
 
-func (us *UserStore) CreateUser(usertaurant *model.User) error {
-	_, err := us.db.InsertOne(context.TODO(), usertaurant)
+func (us *UserStore) CreateUser(user *model.User) error {
+	_, err := us.db.InsertOne(context.TODO(), user)
 	return err
 }
 
@@ -52,5 +52,18 @@ func (us *UserStore) UpdateUserInfoByID(userID string, user *model.User) error {
 	}
 	newUser := bson.M{"name": user.Name, "password": user.Password, "credit": user.Credit, "area": user.Area, "address": user.Address}
 	_, err = us.db.UpdateOne(context.TODO(), bson.M{"_id": oid}, bson.M{"$set": newUser})
+	return err
+}
+
+func (us *UserStore) UpdateUserCredit(userID primitive.ObjectID, newCredit float64) error {
+	newUser := bson.M{"credit": newCredit}
+	_, err := us.db.UpdateOne(context.TODO(), bson.M{"_id": userID}, bson.M{"$set": newUser})
+	return err
+}
+
+func (us *UserStore) AddOrderToUserByID(newOrder *model.Order, user *model.User) error {
+	user.Orders = append(user.Orders, newOrder.ID)
+	newRes := bson.M{"orders": user.Orders}
+	_, err := us.db.UpdateOne(context.TODO(), bson.M{"_id": user.ID}, bson.M{"$set": newRes})
 	return err
 }
