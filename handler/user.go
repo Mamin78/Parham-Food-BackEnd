@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	_ "go.mongodb.org/mongo-driver/bson/primitive"
@@ -37,24 +36,41 @@ func (h *Handler) UserLogin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
-	res, err := h.userStore.GetUserByPhone(user.PhoneNumber)
+	userInformation, err := h.userStore.GetUserByPhone(user.PhoneNumber)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusUnauthorized, "invalid user")
 		}
-		fmt.Println(err.Error())
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
-	fmt.Println(res)
 	//here we should check the password!
-	if res.Password != user.Password {
+	if userInformation.Password != user.Password {
 		return c.JSON(http.StatusUnauthorized, "password is incorrect.")
 	}
-	return c.JSON(http.StatusOK, newUserResponse(res))
+	return c.JSON(http.StatusOK, newUserResponse(userInformation))
 }
 
-func (h *Handler) EditUser(c echo.Context) (err error) {
-	fmt.Println(c)
-	return c.JSON(http.StatusOK, stringFieldFromToken(c, "phone"))
+func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
+	userPhone := stringFieldFromToken(c, "phone")
+
+	userInformation, err := h.userStore.GetUserByPhone(userPhone)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid user")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
+	newUser := model.NewUser(userInformation)
+
+	if err := c.Bind(&newUser); err != nil {
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+	err = h.userStore.UpdateUserInfoByPhone(userPhone, newUser)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Bad Request3")
+	}
+	newUser.Password = ""
+	return c.JSON(http.StatusCreated, newUser)
 }

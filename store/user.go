@@ -17,13 +17,19 @@ func NewUserStore(db *mongo.Collection) *UserStore {
 	}
 }
 
-func (rs *UserStore) CreateUser(restaurant *model.User) error {
-	_, err := rs.db.InsertOne(context.TODO(), restaurant)
+func (us *UserStore) CreateUser(usertaurant *model.User) error {
+	_, err := us.db.InsertOne(context.TODO(), usertaurant)
 	return err
 }
 
-func (rs *UserStore) GetUserByPhone(phoneNumber string) (*model.User, error) {
+func (us *UserStore) GetUserByPhone(phoneNumber string) (*model.User, error) {
 	var u model.User
-	err := rs.db.FindOne(context.TODO(), bson.M{"phone_number": phoneNumber}).Decode(&u)
+	err := us.db.FindOne(context.TODO(), bson.M{"phone_number": phoneNumber}).Decode(&u)
 	return &u, err
+}
+
+func (us *UserStore) UpdateUserInfoByPhone(phoneNumber string, user *model.User) error {
+	newUser := bson.M{"name": user.Name, "password": user.Password, "credit": user.Credit, "area": user.Area, "address": user.Address}
+	_, err := us.db.UpdateOne(context.TODO(), bson.M{"phone_number": phoneNumber}, bson.M{"$set": newUser})
+	return err
 }

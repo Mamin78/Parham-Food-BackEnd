@@ -16,3 +16,15 @@ type User struct {
 
 	Orders *[]primitive.ObjectID `json:"orders" bson:"orders"`
 }
+
+func NewUser(res *User) *User {
+	r := new(User)
+	r.ID = res.ID
+	r.Name = res.Name
+	r.PhoneNumber = res.PhoneNumber
+	r.Password = res.Password
+	r.Credit = res.Credit
+	r.Area = res.Area
+	r.Address = res.Address
+	return r
+}

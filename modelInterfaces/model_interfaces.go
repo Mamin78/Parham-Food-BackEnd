@@ -8,6 +8,7 @@ import (
 type UserStore interface {
 	CreateUser(restaurant *model.User) error
 	GetUserByPhone(email string) (*model.User, error)
+	UpdateUserInfoByPhone(phoneNumber string, user *model.User) error
 }
 
 type RestaurantStore interface {
