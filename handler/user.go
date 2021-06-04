@@ -74,3 +74,18 @@ func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
 	newUser.Password = ""
 	return c.JSON(http.StatusCreated, newUser)
 }
+
+func (h *Handler) GetUserInfo(c echo.Context) (err error) {
+	userPhone := stringFieldFromToken(c, "phone")
+
+	userInformation, err := h.userStore.GetUserByPhone(userPhone)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusUnauthorized, "invalid user")
+		}
+		return c.JSON(http.StatusBadRequest, "Bad Request")
+	}
+
+	userInformation.Password = ""
+	return c.JSON(http.StatusCreated, userInformation)
+}

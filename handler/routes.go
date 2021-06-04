@@ -83,9 +83,9 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	userGroup := g.Group(user, middleware.USERJWTFromHeader(
 		middleware.JWTConfig{
 			Skipper: func(c echo.Context) bool {
-				if c.Request().Method == "GET" {
-					return true
-				}
+				//if c.Request().Method == "GET" {
+				//	return true
+				//}
 				//else if c.Path() == "/api"+manager+signUp || c.Path() == "/api"+manager+login {
 				//	return true
 				//}
@@ -96,4 +96,6 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	))
 
 	userGroup.PUT("/update", h.UpdateUserInfo)
+	userGroup.GET("/info", h.GetUserInfo)
+	userGroup.POST("/order", h.CreateOrder)
 }

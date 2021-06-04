@@ -29,6 +29,7 @@ type FoodStore interface {
 	DisableFoodByID(foodId string) error
 	GetFoodByID(id string) (*model.Food, error)
 	DeleteFoodByID(foodId string) error
+	GetAllFoodsByIDs(foods []model.FoodOrder) (*[]model.Food, error)
 }
 
 type OrderStore interface {

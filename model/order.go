@@ -15,7 +15,7 @@ type Order struct {
 	TimeStamp   time.Time `json:"timestamp" bson:"timestamp"`
 	WaitingTime time.Time `json:"waiting_time" bson:"waiting_time"`
 
-	Foods *[]FoodOrder `json:"foods" bson:"foods"`
+	Foods []FoodOrder `json:"foods" bson:"foods"`
 }
 
 type FoodOrder struct {

@@ -99,3 +99,29 @@ func (fs *FoodStore) GetFoodByID(id string) (*model.Food, error) {
 	err = fs.db.FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&u)
 	return &u, err
 }
+
+func (fs *FoodStore) GetAllFoodsByIDs(foods []model.FoodOrder) (*[]model.Food, error) {
+	var ids []primitive.ObjectID
+	//for _, food := range foods {
+	//	oid, _ := primitive.ObjectIDFromHex(food.FoodID)
+	//	ids = append(ids, oid)
+	//}
+
+	for _, food := range foods {
+		ids = append(ids, food.FoodID)
+	}
+	//
+	//for i:=0; i < len(foods);i++{
+	//
+	//}
+	var result []model.Food
+	query := bson.M{"_id": bson.M{"$in": ids}}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}
