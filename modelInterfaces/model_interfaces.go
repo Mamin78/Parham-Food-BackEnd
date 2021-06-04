@@ -43,6 +43,9 @@ type FoodStore interface {
 
 type OrderStore interface {
 	CreateOrder(order *model.Order) error
+	GetAllRestaurantOrdersByIDs(ordersID []primitive.ObjectID) (*[]model.Order, error)
+	GetOrderByID(id string) (*model.Order, error)
+	ChangeOrderStatus(orderID string, status int) error
 }
 
 type CommentStore interface {

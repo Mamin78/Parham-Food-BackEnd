@@ -58,8 +58,10 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	//foodManager.PUT("/update"+foodID, h.CreateFood)
 
 	orderManager := managerGroup.Group(order)
-	orderManager.GET("/list", h.CreateFood)
-	orderManager.GET("/list", h.CreateFood)
+	orderManager.GET("/list", h.GetRestaurantOrders)
+
+	orderStatusManager := orderManager.Group("/status")
+	orderStatusManager.POST("/confirm"+"/:order_id", h.ConfirmOrderByRestaurantManager)
 
 	//res := g.Group(restaurant, middleware.JWTWithConfig(
 	//	middleware.JWTConfig{
