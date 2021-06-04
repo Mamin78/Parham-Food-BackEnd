@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"myapp/model"
-	"myapp/utils"
+	"github.com/Mamin78/Parham-Food-BackEnd/model"
+	"github.com/Mamin78/Parham-Food-BackEnd/utils"
 )
 
 type managerResponse struct {

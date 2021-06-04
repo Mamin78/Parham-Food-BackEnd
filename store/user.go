@@ -1,11 +1,11 @@
 package store
 
 import (
+	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/net/context"
-	"myapp/model"
 )
 
 type UserStore struct {

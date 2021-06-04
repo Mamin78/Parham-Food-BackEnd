@@ -1,8 +1,8 @@
 package modelInterfaces
 
 import (
+	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"myapp/model"
 )
 
 type UserStore interface {

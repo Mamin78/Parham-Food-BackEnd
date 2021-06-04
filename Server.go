@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/Mamin78/Parham-Food-BackEnd/db"
+	"github.com/Mamin78/Parham-Food-BackEnd/handler"
+	"github.com/Mamin78/Parham-Food-BackEnd/router"
+	"github.com/Mamin78/Parham-Food-BackEnd/store"
 	_ "github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	"myapp/db"
-	"myapp/handler"
-	"myapp/router"
-	"myapp/store"
 	"os"
 )
 

@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"github.com/Mamin78/Parham-Food-BackEnd/router/middleware"
+	"github.com/Mamin78/Parham-Food-BackEnd/utils"
 	"github.com/labstack/echo/v4"
-	"myapp/router/middleware"
-	"myapp/utils"
 )
 
 const (

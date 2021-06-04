@@ -1,12 +1,12 @@
 package handler
 
 import (
+	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	_ "go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2"
 	_ "gopkg.in/mgo.v2/bson"
-	"myapp/model"
 	"net/http"
 )
 

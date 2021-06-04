@@ -2,8 +2,8 @@ package handler
 
 import (
 	"errors"
+	"github.com/Mamin78/Parham-Food-BackEnd/modelInterfaces"
 	"github.com/labstack/echo/v4"
-	"myapp/modelInterfaces"
 	"net/http"
 )
 
