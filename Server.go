@@ -3,7 +3,6 @@ package main
 import (
 	_ "github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	echoSwagger "github.com/swaggo/echo-swagger"
 	"myapp/db"
 	"myapp/handler"
 	"myapp/router"
@@ -21,7 +20,7 @@ func main() {
 	}
 
 	r := router.New()
-	r.GET("/swagger/*", echoSwagger.WrapHandler)
+	//r.GET("/swagger/*", echoSwagger.WrapHandler)
 	mongoClient, err := db.GetMongoClient()
 	if err != nil {
 		log.Fatal(err)
