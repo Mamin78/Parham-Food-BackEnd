@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,9 +34,18 @@ func (rs *RestaurantStore) GetRestaurantById(id string) (*model.Restaurant, erro
 	var u model.Restaurant
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
+		fmt.Println("in get res , before cast id part ")
+
 		return &u, nil
 	}
+	fmt.Println("in get res , after cast id part ")
 	err = rs.db.FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&u)
+	return &u, err
+}
+
+func (rs *RestaurantStore) GetRestaurantByPrimitiveTypeId(id primitive.ObjectID) (*model.Restaurant, error) {
+	var u model.Restaurant
+	err := rs.db.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&u)
 	return &u, err
 }
 

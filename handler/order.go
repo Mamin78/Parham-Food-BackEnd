@@ -27,9 +27,6 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 	resID, isOne := IsFromOneRestaurant(foods)
-	fmt.Println("resID")
-	fmt.Println(resID)
-	fmt.Println("resID")
 	if !isOne {
 		return c.JSON(http.StatusBadRequest, "foods are not from one restaurant")
 	}
@@ -65,19 +62,13 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
-	fmt.Println("resID")
-	fmt.Println(resID)
-	fmt.Println("resID")
-	res, err := h.restaurantStore.GetRestaurantById(resID.String())
+	res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(resID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusUnauthorized, "invalid foods")
 		}
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
-	fmt.Println("res")
-	fmt.Println(res)
-	fmt.Println("res")
 
 	err = h.restaurantStore.AddOrderToRestaurantByID(userOrder, res)
 	if err != nil {
@@ -88,9 +79,6 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 	}
 
 	userOrder.RestaurantID = res.ID
-	fmt.Println("userOrder.RestaurantID")
-	fmt.Println(userOrder.RestaurantID)
-	fmt.Println("userOrder.RestaurantID")
 	userOrder.UserID = user.ID
 	err = h.ordersStore.CreateOrder(userOrder)
 	if err != nil {

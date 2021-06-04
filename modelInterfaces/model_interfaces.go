@@ -27,6 +27,7 @@ type RestaurantStore interface {
 	AddFoodToRestaurant(resName string, food *model.Food, res *model.Restaurant) error
 	DeleteFoodFromRestaurant(foodID string, res *model.Restaurant) error
 	AddOrderToRestaurantByID(newOrder *model.Order, res *model.Restaurant) error
+	GetRestaurantByPrimitiveTypeId(id primitive.ObjectID) (*model.Restaurant, error)
 }
 
 type FoodStore interface {
