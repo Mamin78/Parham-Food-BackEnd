@@ -13,42 +13,43 @@ import (
 func (h *Handler) userSignUp(c echo.Context) error {
 	user := new(model.User)
 	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request1")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	// Validate
 	if user.PhoneNumber == "" || user.Password == "" || len(user.Password) < 8 {
-		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid phone or password"}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid phone or password", false))
 	}
 
 	user.ID = primitive.NewObjectID()
 	err := h.userStore.CreateUser(user)
+	user.Credit = 1000000
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request2")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	user.Password = ""
-	return c.JSON(http.StatusCreated, user)
+	return c.JSON(http.StatusCreated, model.NewResponse(user, "", true))
 }
 
 func (h *Handler) UserLogin(c echo.Context) error {
 	user := new(model.User)
 	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	userInformation, err := h.userStore.GetUserByPhone(user.PhoneNumber)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid user")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	//here we should check the password!
 	if userInformation.Password != user.Password {
-		return c.JSON(http.StatusUnauthorized, "password is incorrect.")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "password is incorrect.", false))
 	}
-	return c.JSON(http.StatusOK, newUserResponse(userInformation))
+	return c.JSON(http.StatusCreated, model.NewResponse(newUserResponse(userInformation), "", true))
 }
 
 func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
@@ -57,22 +58,22 @@ func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
 	userInformation, err := h.userStore.GetUserByPhone(userPhone)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid user")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	newUser := model.NewUser(userInformation)
 
 	if err := c.Bind(&newUser); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	err = h.userStore.UpdateUserInfoByPhone(userPhone, newUser)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request3")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	newUser.Password = ""
-	return c.JSON(http.StatusCreated, newUser)
+	return c.JSON(http.StatusCreated, model.NewResponse(newUser, "", true))
 }
 
 func (h *Handler) GetUserInfo(c echo.Context) (err error) {
@@ -81,11 +82,11 @@ func (h *Handler) GetUserInfo(c echo.Context) (err error) {
 	userInformation, err := h.userStore.GetUserByPhone(userPhone)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid user")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	userInformation.Password = ""
-	return c.JSON(http.StatusCreated, userInformation)
+	return c.JSON(http.StatusCreated, model.NewResponse(userInformation, "", true))
 }

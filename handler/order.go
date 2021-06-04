@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,36 +15,39 @@ const (
 func (h *Handler) CreateOrder(c echo.Context) error {
 	userPhone := stringFieldFromToken(c, "phone")
 
-	fmt.Println(userPhone)
 	userOrder := new(model.Order)
 	userOrder.ID = primitive.NewObjectID()
 
 	if err := c.Bind(&userOrder); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	foods, err := h.foodsStore.GetAllFoodsByIDs(userOrder.Foods)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid foods")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid foods", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
+	if !IsAllFoodSEnable(foods) {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "some foods are not enable!", false))
+	}
+
 	resID, isOne := IsFromOneRestaurant(foods)
 	if !isOne {
-		return c.JSON(http.StatusBadRequest, "foods are not from one restaurant")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "foods are not from one restaurant", false))
 	}
 
 	user, err := h.userStore.GetUserByPhone(userPhone)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid foods")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid foods", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	cost := calculateOrderPrice(foods, userOrder.Foods)
 	if cost > user.Credit {
-		return c.JSON(http.StatusBadRequest, "sorry, your credit is not sufficient")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "sorry, your credit is not sufficient", false))
 	}
 
 	user.Credit -= cost
@@ -53,33 +55,33 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 	err = h.userStore.AddOrderToUserByID(userOrder, user)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid foods")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "user not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	err = h.userStore.UpdateUserCredit(user.ID, user.Credit)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid user!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user!", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(resID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid foods")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	err = h.restaurantStore.AddOrderToRestaurantByID(userOrder, res)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid foods")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	userOrder.RestaurantID = res.ID
@@ -87,12 +89,11 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 	err = h.ordersStore.CreateOrder(userOrder)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid foods")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-
-	return c.JSON(http.StatusCreated, userOrder)
+	return c.JSON(http.StatusCreated, model.NewResponse(userOrder, "", true))
 }
 
 func (h *Handler) GetRestaurantOrders(c echo.Context) (err error) {
@@ -100,20 +101,21 @@ func (h *Handler) GetRestaurantOrders(c echo.Context) (err error) {
 	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Manager", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request1")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	res.Password = ""
 
 	orders, err := h.ordersStore.GetAllRestaurantOrdersByIDs(res.Orders)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request1")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, orders)
+
+	return c.JSON(http.StatusCreated, model.NewResponse(orders, "", true))
 }
 
 func (h *Handler) ConfirmOrderByRestaurantManager(c echo.Context) (err error) {
@@ -123,32 +125,33 @@ func (h *Handler) ConfirmOrderByRestaurantManager(c echo.Context) (err error) {
 	order, err := h.ordersStore.GetOrderByID(orderID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "order not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request1")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request1")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	res.Password = ""
 	if res.ID != order.RestaurantID {
-		return c.JSON(http.StatusUnauthorized, "access denied")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "access denied", false))
 
 	}
 
 	err = h.ordersStore.ChangeOrderStatus(orderID, managerConfirmationStatus)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Manager")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "order not found", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request1")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, "This order confirmed by you.")
+
+	return c.JSON(http.StatusCreated, model.NewResponse("This order confirmed by you.", "", true))
 }
 
 func IsFromOneRestaurant(foods *[]model.Food) (primitive.ObjectID, bool) {
@@ -165,6 +168,15 @@ func IsFromOneRestaurant(foods *[]model.Food) (primitive.ObjectID, bool) {
 		return k, true
 	}
 	return no, false
+}
+
+func IsAllFoodSEnable(foods *[]model.Food) bool {
+	for _, food := range *foods {
+		if !food.CanBeOrdered {
+			return false
+		}
+	}
+	return true
 }
 
 func calculateOrderPrice(foods *[]model.Food, orderFoods []model.FoodOrder) float64 {

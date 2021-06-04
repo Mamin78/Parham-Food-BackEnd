@@ -32,3 +32,5 @@ func newUserResponse(u *model.User) *userResponse {
 	r.User.Token = utils.GenerateUserJWT(u.PhoneNumber)
 	return r
 }
+
+

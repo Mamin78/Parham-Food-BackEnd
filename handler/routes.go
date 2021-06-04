@@ -100,4 +100,6 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	userGroup.PUT("/update", h.UpdateUserInfo)
 	userGroup.GET("/info", h.GetUserInfo)
 	userGroup.POST("/order", h.CreateOrder)
+	userComment := userGroup.Group("/comment")
+	userComment.POST("/add" + "/:food_id",h.AddUserCommentToFood)
 }

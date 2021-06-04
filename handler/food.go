@@ -14,9 +14,9 @@ func (h *Handler) CreateFood(c echo.Context) error {
 	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant!", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	res.Password = ""
 
@@ -25,18 +25,18 @@ func (h *Handler) CreateFood(c echo.Context) error {
 	//food.RestaurantName = res.Name
 	food.RestaurantID = res.ID
 	if err := c.Bind(&food); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	err = h.foodsStore.CreateRestaurant(food)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	err = h.restaurantStore.AddFoodToRestaurant(res.Name, food, res)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, food)
+	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
 }
 
 func (h *Handler) DisableFood(c echo.Context) error {
@@ -46,19 +46,19 @@ func (h *Handler) DisableFood(c echo.Context) error {
 	err := h.foodsStore.DisableFoodByID(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	food, err := h.foodsStore.GetFoodByID(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, food)
+	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
 }
 
 func (h *Handler) EnableFood(c echo.Context) error {
@@ -68,19 +68,19 @@ func (h *Handler) EnableFood(c echo.Context) error {
 	err := h.foodsStore.EnableFoodByID(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	food, err := h.foodsStore.GetFoodByID(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, food)
+	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
 }
 
 func (h *Handler) DeleteFood(c echo.Context) error {
@@ -89,9 +89,9 @@ func (h *Handler) DeleteFood(c echo.Context) error {
 	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	res.Password = ""
 
@@ -101,26 +101,26 @@ func (h *Handler) DeleteFood(c echo.Context) error {
 	food, err := h.foodsStore.GetFoodByID(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	err = h.foodsStore.DeleteFoodByID(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	err = h.restaurantStore.DeleteFoodFromRestaurant(foodID,res)
+	err = h.restaurantStore.DeleteFoodFromRestaurant(foodID, res)
 	if err != nil {
 		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusUnauthorized, "invalid Restaurant!")
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
 		}
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	return c.JSON(http.StatusCreated, food)
+	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
 }

@@ -46,6 +46,7 @@ type OrderStore interface {
 	GetAllRestaurantOrdersByIDs(ordersID []primitive.ObjectID) (*[]model.Order, error)
 	GetOrderByID(id string) (*model.Order, error)
 	ChangeOrderStatus(orderID string, status int) error
+	GetAllUserOrders(userID primitive.ObjectID) (*[]model.Order, error)
 }
 
 type CommentStore interface {

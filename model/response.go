@@ -1,13 +1,15 @@
 package model
 
 type Response struct {
-	Code    int    `json:"code" bson:"code"`
-	Message string `json:"message" bson:"message"`
+	Data  interface{} `json:"data" bson:"data"`
+	Error string      `json:"error" bson:"error"`
+	OK    bool        `json:"ok" bson:"ok"`
 }
 
-func NewResponse(code int, message string) (response Response){
+func NewResponse(data interface{}, error string, OK bool) (response Response) {
 	var r Response
-	r.Code = code
-	r.Message = message
+	r.Data = data
+	r.Error = error
+	r.OK = OK
 	return r
 }

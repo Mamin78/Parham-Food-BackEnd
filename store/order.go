@@ -55,3 +55,16 @@ func (orderStore *OrderStore) ChangeOrderStatus(orderID string, status int) erro
 	_, err = orderStore.db.UpdateOne(context.TODO(), bson.M{"_id": oid}, bson.M{"$set": newRes})
 	return err
 }
+
+func (orderStore *OrderStore) GetAllUserOrders(userID primitive.ObjectID) (*[]model.Order, error) {
+	var result []model.Order
+	query := bson.M{"user_id": userID}
+	res, err := orderStore.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}
