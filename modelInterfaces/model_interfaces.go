@@ -14,7 +14,6 @@ type UserStore interface {
 	UpdateUserInfoByID(userID string, user *model.User) error
 	UpdateUserCredit(userID primitive.ObjectID, newCredit float64) error
 
-	//AddOrderToUserByPhone(phone string, newOrder *model.Order, user *model.User) error
 	AddOrderToUserByID(newOrder *model.Order, user *model.User) error
 
 	AddCommentToUser(commentId primitive.ObjectID, user *model.User) error
@@ -42,6 +41,7 @@ type FoodStore interface {
 	DeleteFoodByID(foodId string) error
 	GetAllFoodsByIDs(foods []model.FoodOrder) (*[]model.Food, error)
 	AddCommentToFood(commentId primitive.ObjectID, food *model.Food) error
+	GetFoodByPrimitiveTypeID(id primitive.ObjectID) (*model.Food, error)
 }
 
 type OrderStore interface {
@@ -54,6 +54,7 @@ type OrderStore interface {
 
 type CommentStore interface {
 	CreateComment(comment *model.Comment) error
+	GetAllFoodComments(foodID string) (*[]model.Comment, error)
 }
 
 type ManagerCommentStore interface {

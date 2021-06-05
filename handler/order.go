@@ -107,6 +107,10 @@ func (h *Handler) GetRestaurantOrders(c echo.Context) (err error) {
 	}
 	res.Password = ""
 
+	if len(res.Orders) == 0 {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "there is no order yet", false))
+	}
+
 	orders, err := h.ordersStore.GetAllRestaurantOrdersByIDs(res.Orders)
 	if err != nil {
 		if err == mgo.ErrNotFound {

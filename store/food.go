@@ -123,3 +123,10 @@ func (fs *FoodStore) AddCommentToFood(commentId primitive.ObjectID, food *model.
 	_, err := fs.db.UpdateOne(context.TODO(), bson.M{"_id": food.ID}, bson.M{"$set": newRes})
 	return err
 }
+
+
+func (fs *FoodStore) GetFoodByPrimitiveTypeID(id primitive.ObjectID) (*model.Food, error) {
+	var u model.Food
+	err := fs.db.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&u)
+	return &u, err
+}

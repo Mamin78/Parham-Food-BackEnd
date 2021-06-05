@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,7 +11,6 @@ import (
 func (h *Handler) AddUserCommentToFood(c echo.Context) error {
 	userPhone := stringFieldFromToken(c, "phone")
 
-	fmt.Println(foodID)
 	userComment := new(model.Comment)
 	userComment.ID = primitive.NewObjectID()
 
@@ -43,7 +41,7 @@ func (h *Handler) AddUserCommentToFood(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "you have not bought this food", false))
 	}
 
-	food, err := h.foodsStore.GetFoodByID(userComment.ID.String())
+	food, err := h.foodsStore.GetFoodByPrimitiveTypeID(userComment.FoodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "food not found", false))

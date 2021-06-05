@@ -7,18 +7,17 @@ import (
 )
 
 const (
-	manager        = "/manager"
-	restaurant     = "/restaurant"
-	signUp         = "/signup"
-	login          = "/login"
-	edit           = "/edit"
-	restaurantName = "/:restaurant_name"
-	foodID         = "/:food_id"
+	URLManager        = "/manager"
+	URLRestaurant     = "/restaurant"
+	URLSignUp         = "/signup"
+	URLLogin          = "/login"
+	URLEdit           = "/edit"
+	URLRestaurantName = "/:restaurant_name"
+	URLFoodID         = "/:food_id"
 
-	food  = "/food"
-	order = "/order"
-	foods = "/foods"
-	user  = "/user"
+	URLFood  = "/food"
+	URLOrder = "/order"
+	URLUser  = "/user"
 )
 
 func (h *Handler) RegisterRoutes(g *echo.Group) {
@@ -26,14 +25,14 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.GET("/", h.BaseRouter)
 
 	//sign up and login part!
-	g.POST(manager+signUp, h.CreateRestaurantManager)
-	g.POST(manager+login, h.ManagerLogin)
+	g.POST(URLManager+URLSignUp, h.CreateRestaurantManager)
+	g.POST(URLManager+URLLogin, h.ManagerLogin)
 
-	g.POST(user+signUp, h.userSignUp)
-	g.POST(user+login, h.UserLogin)
+	g.POST(URLUser+URLSignUp, h.userSignUp)
+	g.POST(URLUser+URLLogin, h.UserLogin)
 
 	//other parts
-	managerGroup := g.Group(manager, middleware.JWTWithConfig(
+	managerGroup := g.Group(URLManager, middleware.JWTWithConfig(
 		middleware.JWTConfig{
 			Skipper: func(c echo.Context) bool {
 				if c.Request().Method == "GET" {
@@ -50,14 +49,14 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	managerGroup.POST("/create", h.CreateRestaurant)
 	managerGroup.PUT("/update", h.EditRestaurantInfo)
 
-	foodManager := managerGroup.Group(food)
+	foodManager := managerGroup.Group(URLFood)
 	foodManager.POST("/add", h.CreateFood)
-	foodManager.DELETE("/delete"+foodID, h.DeleteFood)
-	foodManager.PUT("/disable"+foodID, h.DisableFood)
-	foodManager.PUT("/enable"+foodID, h.EnableFood)
+	foodManager.DELETE("/delete"+URLFoodID, h.DeleteFood)
+	foodManager.PUT("/disable"+URLFoodID, h.DisableFood)
+	foodManager.PUT("/enable"+URLFoodID, h.EnableFood)
 	//foodManager.PUT("/update"+foodID, h.CreateFood)
 
-	orderManager := managerGroup.Group(order)
+	orderManager := managerGroup.Group(URLOrder)
 	orderManager.GET("/list", h.GetRestaurantOrders)
 
 	orderStatusManager := orderManager.Group("/status")
@@ -80,9 +79,9 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	//jwtMiddleware := middleware.JWT(utils.JWTSecret)
 	//userJWTMiddleware := middleware.USER(utils.JWTSecret)
-	managerGroup.PUT(edit, h.EditRestaurantInfo)
+	managerGroup.PUT(URLEdit, h.EditRestaurantInfo)
 
-	userGroup := g.Group(user, middleware.USERJWTFromHeader(
+	userGroup := g.Group(URLUser, middleware.USERJWTFromHeader(
 		middleware.JWTConfig{
 			Skipper: func(c echo.Context) bool {
 				//if c.Request().Method == "GET" {
@@ -102,4 +101,20 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	userGroup.POST("/order", h.CreateOrder)
 	userComment := userGroup.Group("/comment")
 	userComment.POST("/add", h.AddUserCommentToFood)
+
+	foodGroup := g.Group(URLFood, middleware.JWTWithConfig(
+		middleware.JWTConfig{
+			Skipper: func(c echo.Context) bool {
+				if c.Request().Method == "GET" {
+					return true
+				}
+				return false
+			},
+			SigningKey: utils.JWTSecret,
+		},
+	))
+
+	foodGroup.GET("/info"+"/:food_id", h.GetFoodInformation)
+	foodGroup.GET("/comment"+"/:food_id", h.GetFoodComments)
+
 }
