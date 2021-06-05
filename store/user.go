@@ -67,3 +67,10 @@ func (us *UserStore) AddOrderToUserByID(newOrder *model.Order, user *model.User)
 	_, err := us.db.UpdateOne(context.TODO(), bson.M{"_id": user.ID}, bson.M{"$set": newRes})
 	return err
 }
+
+func (us *UserStore) AddCommentToUser(commentId primitive.ObjectID, user *model.User) error {
+	user.Comments = append(user.Comments, commentId)
+	newRes := bson.M{"comments": user.Comments}
+	_, err := us.db.UpdateOne(context.TODO(), bson.M{"_id": user.ID}, bson.M{"$set": newRes})
+	return err
+}

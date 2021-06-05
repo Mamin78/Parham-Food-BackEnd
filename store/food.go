@@ -116,3 +116,10 @@ func (fs *FoodStore) GetAllFoodsByIDs(foods []model.FoodOrder) (*[]model.Food, e
 	}
 	return &result, err
 }
+
+func (fs *FoodStore) AddCommentToFood(commentId primitive.ObjectID, food *model.Food) error {
+	food.Comments = append(food.Comments, commentId)
+	newRes := bson.M{"comments": food.Comments}
+	_, err := fs.db.UpdateOne(context.TODO(), bson.M{"_id": food.ID}, bson.M{"$set": newRes})
+	return err
+}

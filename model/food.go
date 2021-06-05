@@ -10,4 +10,6 @@ type Food struct {
 	CanBeOrdered bool    `json:"can_be_ordered" bson:"can_be_ordered"`
 	Rate         float64 `json:"rate" bson:"rate"`
 	Price        float64 `json:"price" bson:"price"`
+
+	Comments []primitive.ObjectID `json:"comments" bson:"comments"`
 }

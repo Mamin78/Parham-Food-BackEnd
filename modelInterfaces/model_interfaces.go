@@ -16,6 +16,8 @@ type UserStore interface {
 
 	//AddOrderToUserByPhone(phone string, newOrder *model.Order, user *model.User) error
 	AddOrderToUserByID(newOrder *model.Order, user *model.User) error
+
+	AddCommentToUser(commentId primitive.ObjectID, user *model.User) error
 }
 
 type RestaurantStore interface {
@@ -39,6 +41,7 @@ type FoodStore interface {
 	GetFoodByID(id string) (*model.Food, error)
 	DeleteFoodByID(foodId string) error
 	GetAllFoodsByIDs(foods []model.FoodOrder) (*[]model.Food, error)
+	AddCommentToFood(commentId primitive.ObjectID, food *model.Food) error
 }
 
 type OrderStore interface {
@@ -50,6 +53,7 @@ type OrderStore interface {
 }
 
 type CommentStore interface {
+	CreateComment(comment *model.Comment) error
 }
 
 type ManagerCommentStore interface {

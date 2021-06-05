@@ -22,8 +22,8 @@ func (h *Handler) userSignUp(c echo.Context) error {
 	}
 
 	user.ID = primitive.NewObjectID()
-	err := h.userStore.CreateUser(user)
 	user.Credit = 1000000
+	err := h.userStore.CreateUser(user)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
@@ -63,15 +63,20 @@ func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	newUser := model.NewUser(userInformation)
 
+	newUser := model.NewUser(userInformation)
 	if err := c.Bind(&newUser); err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	if userInformation.PhoneNumber != newUser.PhoneNumber {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "you can't change the information of this user", false))
 	}
 	err = h.userStore.UpdateUserInfoByPhone(userPhone, newUser)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
+
 	newUser.Password = ""
 	return c.JSON(http.StatusCreated, model.NewResponse(newUser, "", true))
 }
