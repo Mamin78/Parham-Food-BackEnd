@@ -8,8 +8,14 @@ type Food struct {
 
 	Name         string  `json:"name" bson:"name"`
 	CanBeOrdered bool    `json:"can_be_ordered" bson:"can_be_ordered"`
-	Rate         float64 `json:"rate" bson:"rate"`
+	//Rate         float64 `json:"rate" bson:"rate"`
 	Price        float64 `json:"price" bson:"price"`
 
 	Comments []primitive.ObjectID `json:"comments" bson:"comments"`
+	Rates    []Rate               `json:"rates" bson:"rates"`
+}
+
+type Rate struct {
+	UserID primitive.ObjectID `json:"user_id,omitempty" bson:"user_id"`
+	Rate   int                `json:"rate" bson:"rate"`
 }

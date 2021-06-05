@@ -117,4 +117,7 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	foodGroup.GET("/info"+"/:food_id", h.GetFoodInformation)
 	foodGroup.GET("/comment"+"/:food_id", h.GetFoodComments)
 
+	userRateGroup := userGroup.Group("/food")
+	userRateGroup.POST("/:food_id"+"/rate", h.AddUserRateToFood)
+
 }

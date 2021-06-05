@@ -42,6 +42,7 @@ type FoodStore interface {
 	GetAllFoodsByIDs(foods []model.FoodOrder) (*[]model.Food, error)
 	AddCommentToFood(commentId primitive.ObjectID, food *model.Food) error
 	GetFoodByPrimitiveTypeID(id primitive.ObjectID) (*model.Food, error)
+	AddRateToFood(rate model.Rate, food *model.Food) error
 }
 
 type OrderStore interface {

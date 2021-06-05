@@ -124,9 +124,15 @@ func (fs *FoodStore) AddCommentToFood(commentId primitive.ObjectID, food *model.
 	return err
 }
 
-
 func (fs *FoodStore) GetFoodByPrimitiveTypeID(id primitive.ObjectID) (*model.Food, error) {
 	var u model.Food
 	err := fs.db.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&u)
 	return &u, err
+}
+
+func (fs *FoodStore) AddRateToFood(rate model.Rate, food *model.Food) error {
+	food.Rates = append(food.Rates, rate)
+	newRes := bson.M{"rates": food.Rates}
+	_, err := fs.db.UpdateOne(context.TODO(), bson.M{"_id": food.ID}, bson.M{"$set": newRes})
+	return err
 }

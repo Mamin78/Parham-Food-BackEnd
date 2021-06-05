@@ -11,7 +11,7 @@ type Comment struct {
 	UserID primitive.ObjectID `json:"user_id,omitempty" bson:"user_id"`
 
 	Text string `json:"text" bson:"text"`
-	Rate int    `json:"rate" bson:"rate"`
+	//Rate int    `json:"rate" bson:"rate"`
 }
 
 type ManagerComment struct {
