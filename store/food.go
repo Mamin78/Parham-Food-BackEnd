@@ -136,3 +136,16 @@ func (fs *FoodStore) AddRateToFood(rate model.Rate, food *model.Food) error {
 	_, err := fs.db.UpdateOne(context.TODO(), bson.M{"_id": food.ID}, bson.M{"$set": newRes})
 	return err
 }
+
+func (fs *FoodStore) GetFoodsWithSpecificResAndName(resID primitive.ObjectID, foodName string) (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{"restaurant_id": resID, "name": foodName}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}

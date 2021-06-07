@@ -1,0 +1,76 @@
+package handler
+
+import (
+	"github.com/Mamin78/Parham-Food-BackEnd/model"
+	"github.com/labstack/echo/v4"
+	"gopkg.in/mgo.v2"
+	"net/http"
+)
+
+func (h *Handler) Search(c echo.Context) (err error) {
+	//userPhone := stringFieldFromToken(c, "phone")
+	query := new(model.Search)
+	if err := c.Bind(&query); err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	return doQuery(h, c, query)
+
+	//return c.JSON(http.StatusCreated, model.NewResponse(nil, "", true))
+}
+
+func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
+	if query.Area > 0 && query.Area < 23 {
+		if query.RestaurantName != "" {
+			res, err := h.restaurantStore.GetRestaurantByName(query.RestaurantName)
+			if err != nil {
+				if err == mgo.ErrNotFound {
+					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+				}
+				return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+			}
+			if isInServiceAreas(res, query.Area) {
+				if query.FoodName != "" {
+					foods, err := h.foodsStore.GetFoodsWithSpecificResAndName(res.ID, query.FoodName)
+					if err != nil {
+						if err == mgo.ErrNotFound {
+							return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+						}
+						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+					}
+					return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				} else {
+					foods, err := h.foodsStore.GetAllFoodsOfRestaurant(query.RestaurantName)
+					if err != nil {
+						if err == mgo.ErrNotFound {
+							return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+						}
+						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+					}
+					return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+
+				}
+			} else {
+				return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Sorry, this restaurant cant service to you at this area", false))
+			}
+		} else {
+
+		}
+	} else {
+		if query.RestaurantName != "" {
+
+		} else {
+
+		}
+	}
+	return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+}
+
+func isInServiceAreas(res *model.Restaurant, area int) bool {
+	for _, serviceArea := range res.ServiceArea {
+		if serviceArea == area {
+			return true
+		}
+	}
+	return false
+}
