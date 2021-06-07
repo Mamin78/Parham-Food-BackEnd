@@ -40,3 +40,14 @@ func (cs *CommentStore) GetAllFoodComments(foodID string) (*[]model.Comment, err
 	return &result, err
 }
 
+func (cs *CommentStore) GetCommentByID(ID primitive.ObjectID) (*model.Comment, error) {
+	var u model.Comment
+	err := cs.db.FindOne(context.TODO(), bson.M{"_id": ID}).Decode(&u)
+	return &u, err
+}
+
+func (cs *CommentStore) AddManagerReply(managerReply model.ManagerReply, commentId primitive.ObjectID) error {
+	newRes := bson.M{"manager_reply": managerReply}
+	_, err := cs.db.UpdateOne(context.TODO(), bson.M{"_id": commentId}, bson.M{"$set": newRes})
+	return err
+}

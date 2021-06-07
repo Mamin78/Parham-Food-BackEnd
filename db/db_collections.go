@@ -57,18 +57,3 @@ func createUniqueIndices(db *mongo.Collection, field string) {
 		log.Fatal(err)
 	}
 }
-
-//func SetupTweetsDb(mongoClient *mongo.Client) *mongo.Collection {
-//	tweetsDb := mongoClient.Database("parham-food").Collection("tweets")
-//	_, err := tweetsDb.Indexes().CreateOne(
-//		context.Background(),
-//		mongo.IndexModel{
-//			Keys:    bson.D{{Key: "text", Value: "text"}},
-//			Options: nil,
-//		})
-//
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	return tweetsDb
-//}

@@ -12,13 +12,14 @@ func (h *Handler) AddUserCommentToFood(c echo.Context) error {
 	userPhone := stringFieldFromToken(c, "phone")
 
 	userComment := new(model.Comment)
-	userComment.ID = primitive.NewObjectID()
 
 	//here, we have restaurant id and food id !
 	//the costumer had to buy this food !
 	if err := c.Bind(&userComment); err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
+
+	userComment.ID = primitive.NewObjectID()
 
 	user, err := h.userStore.GetUserByPhone(userPhone)
 	if err != nil {

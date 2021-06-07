@@ -11,8 +11,6 @@ import (
 )
 
 func main() {
-	//dt := time.Now()
-	//fmt.Println(dt.Format("15:04:05"))
 	port := os.Getenv("PORT")
 	if port == "" {
 		// default Port
@@ -20,7 +18,6 @@ func main() {
 	}
 
 	r := router.New()
-	//r.GET("/swagger/*", echoSwagger.WrapHandler)
 	mongoClient, err := db.GetMongoClient()
 	if err != nil {
 		log.Fatal(err)
@@ -41,20 +38,5 @@ func main() {
 	h := handler.NewHandler(userStore, restaurantStore, foodStore, orderStore, commentStore, managerCommentStore)
 	h.RegisterRoutes(g)
 
-	// Fire up the trends beforehand
-	//err = hs.Update()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	// RUN THIS IF YOUR HASHTAG DATABASE IS EMPTY
-	// StartUpTrends(ts, h)
-
 	r.Logger.Fatal(r.Start("0.0.0.0:" + port))
-	//e := echo.New()
-	//e.POST("restaurant", h.CreateRestaurant)
-	//
-	//fmt.Println(h)
-	//e.Logger.Fatal(e.Start(":1373"))
-
 }

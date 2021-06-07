@@ -56,6 +56,8 @@ type OrderStore interface {
 type CommentStore interface {
 	CreateComment(comment *model.Comment) error
 	GetAllFoodComments(foodID string) (*[]model.Comment, error)
+	GetCommentByID(ID primitive.ObjectID) (*model.Comment, error)
+	AddManagerReply(managerReply model.ManagerReply, commentId primitive.ObjectID) error
 }
 
 type ManagerCommentStore interface {

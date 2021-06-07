@@ -62,24 +62,10 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	orderStatusManager := orderManager.Group("/status")
 	orderStatusManager.POST("/confirm"+"/:order_id", h.ConfirmOrderByRestaurantManager)
 
-	//res := g.Group(restaurant, middleware.JWTWithConfig(
-	//	middleware.JWTConfig{
-	//		Skipper: func(c echo.Context) bool {
-	//			if c.Request().Method == "GET" {
-	//				return true
-	//			}
-	//			return false
-	//		},
-	//		SigningKey: utils.JWTSecret,
-	//	},
-	//))
-	//res.GET(restaurantName, h.GetRestaurantInfo)
-	//res.POST(restaurantName+food, h.CreateFood)
-	//res.GET(restaurantName+foods, h.GetAllFoodsOfRestaurant)
-
-	//jwtMiddleware := middleware.JWT(utils.JWTSecret)
-	//userJWTMiddleware := middleware.USER(utils.JWTSecret)
 	managerGroup.PUT(URLEdit, h.EditRestaurantInfo)
+
+	managerCommentGroup := managerGroup.Group("/comment")
+	managerCommentGroup.POST("/reply", h.AddManagerReply)
 
 	userGroup := g.Group(URLUser, middleware.USERJWTFromHeader(
 		middleware.JWTConfig{
