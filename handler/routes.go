@@ -85,6 +85,10 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	userGroup.PUT("/update", h.UpdateUserInfo)
 	userGroup.GET("/info", h.GetUserInfo)
 	userGroup.POST("/order", h.CreateOrder)
+	userGroup.GET("/order/status"+"/:order_id", h.GetOrderState)
+
+	userGroup.GET("/food"+"/favorites", h.GetUserFavoriteFoods)
+
 	userComment := userGroup.Group("/comment")
 	userComment.POST("/add", h.AddUserCommentToFood)
 

@@ -6,10 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2"
 	"net/http"
+	"time"
 )
 
 const (
 	managerConfirmationStatus = 1
+	transmissionTime          = time.Minute * 30
 )
 
 func (h *Handler) CreateOrder(c echo.Context) error {
@@ -17,6 +19,14 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 
 	userOrder := new(model.Order)
 	userOrder.ID = primitive.NewObjectID()
+
+	//res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(userOrder.RestaurantID)
+	//if err != nil {
+	//	if err == mgo.ErrNotFound {
+	//		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant", false))
+	//	}
+	//	return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	//}
 
 	if err := c.Bind(&userOrder); err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
@@ -86,6 +96,9 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 
 	userOrder.RestaurantID = res.ID
 	userOrder.UserID = user.ID
+	userOrder.TransmissionTime = transmissionTime
+	userOrder.PreparationTime = res.BaseFoodTime
+
 	err = h.ordersStore.CreateOrder(userOrder)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -155,7 +168,65 @@ func (h *Handler) ConfirmOrderByRestaurantManager(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
+	err = h.ordersStore.ChangeOrderAcceptTime(orderID, time.Now())
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "order not found", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
 	return c.JSON(http.StatusCreated, model.NewResponse("This order confirmed by you.", "", true))
+}
+
+func (h *Handler) GetOrderState(c echo.Context) (err error) {
+	userPhone := stringFieldFromToken(c, "phone")
+	orderID := c.Param("order_id")
+
+	order, err := h.ordersStore.GetOrderByID(orderID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "order not found", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	user, err := h.userStore.GetUserByPhone(userPhone)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+	if order.UserID != user.ID {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Sorry, You can't see information of this order", false))
+	}
+
+	now := time.Now()
+
+	if order.State == 1 {
+		add := order.AcceptTime.Add(order.PreparationTime)
+		if add.Before(now) {
+			order.State = 2
+		}
+	}
+	if order.State == 2 {
+		add := order.AcceptTime.Add(order.PreparationTime)
+		add = add.Add(order.TransmissionTime)
+		if add.Before(now) {
+			order.State = 3
+		}
+	}
+
+	err = h.ordersStore.ChangeOrderStatus(orderID, order.State)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "order not found", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	return c.JSON(http.StatusCreated, model.NewResponse(order, "", true))
 }
 
 func IsFromOneRestaurant(foods *[]model.Food) (primitive.ObjectID, bool) {

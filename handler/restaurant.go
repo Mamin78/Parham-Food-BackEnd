@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mgo.v2"
 	_ "gopkg.in/mgo.v2/bson"
 	"net/http"
+	"time"
 )
 
 func (h *Handler) CreateRestaurantManager(c echo.Context) error {
@@ -50,6 +51,7 @@ func (h *Handler) CreateRestaurant(c echo.Context) error {
 	}
 
 	res.Email = managerEmail
+	res.BaseFoodTime = res.BaseFoodTime * time.Minute
 	err = h.restaurantStore.UpdateInformation(managerEmail, res)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))

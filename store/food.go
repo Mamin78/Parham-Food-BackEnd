@@ -149,3 +149,29 @@ func (fs *FoodStore) GetFoodsWithSpecificResAndName(resID primitive.ObjectID, fo
 	}
 	return &result, err
 }
+
+func (fs *FoodStore) GetAllFoods() (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (fs *FoodStore) GetAllFavoriteFoods(ids []primitive.ObjectID) (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{"_id": bson.M{"$in": ids}}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}

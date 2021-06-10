@@ -63,7 +63,6 @@ func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-
 	newUser := model.NewUser(userInformation)
 	if err := c.Bind(&newUser); err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
@@ -94,4 +93,80 @@ func (h *Handler) GetUserInfo(c echo.Context) (err error) {
 
 	userInformation.Password = ""
 	return c.JSON(http.StatusCreated, model.NewResponse(userInformation, "", true))
+}
+
+func (h *Handler) GetUserFavoriteFoods(c echo.Context) (err error) {
+	userPhone := stringFieldFromToken(c, "phone")
+
+	userInformation, err := h.userStore.GetUserByPhone(userPhone)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	allFoods, err := h.foodsStore.GetAllFoods()
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "there is some problems with foods", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	allUserOrders, err := h.ordersStore.GetAllUserOrders(userInformation.ID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "there is some problems with foods", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	IDs := createSliceOfIDs(getAllFoodsOrderedMoreThanFiveByUser(getAllFoodsStaredMoreThanThree(allFoods, userInformation.ID), allUserOrders))
+	result, err := h.foodsStore.GetAllFavoriteFoods(IDs)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "there is some problems with foods", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+	return c.JSON(http.StatusCreated, model.NewResponse(result, "", true))
+}
+
+func getAllFoodsStaredMoreThanThree(allFoods *[]model.Food, userID primitive.ObjectID) map[primitive.ObjectID]bool {
+	foodSet := make(map[primitive.ObjectID]bool)
+	for _, food := range *allFoods {
+		for _, rate := range food.Rates {
+			if rate.Rate > 3 && rate.UserID == userID {
+				foodSet[food.ID] = true
+			}
+		}
+	}
+
+	return foodSet
+}
+
+func getAllFoodsOrderedMoreThanFiveByUser(foodSet map[primitive.ObjectID]bool, orders *[]model.Order) map[primitive.ObjectID]bool {
+	foodSetNumber := make(map[primitive.ObjectID]int)
+	for _, order := range *orders {
+		for _, food := range order.Foods {
+			foodSetNumber[food.FoodID]++
+		}
+	}
+
+	for k, v := range foodSetNumber {
+		if v > 5 {
+			foodSet[k] = true
+		}
+	}
+
+	return foodSet
+}
+
+func createSliceOfIDs(set map[primitive.ObjectID]bool) []primitive.ObjectID {
+	var res []primitive.ObjectID
+	for k, _ := range set {
+		res = append(res, k)
+	}
+	return res
 }

@@ -3,6 +3,7 @@ package modelInterfaces
 import (
 	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type UserStore interface {
@@ -44,6 +45,8 @@ type FoodStore interface {
 	GetFoodByPrimitiveTypeID(id primitive.ObjectID) (*model.Food, error)
 	AddRateToFood(rate model.Rate, food *model.Food) error
 	GetFoodsWithSpecificResAndName(resID primitive.ObjectID, foodName string) (*[]model.Food, error)
+	GetAllFoods() (*[]model.Food, error)
+	GetAllFavoriteFoods(ids []primitive.ObjectID) (*[]model.Food, error)
 }
 
 type OrderStore interface {
@@ -52,6 +55,7 @@ type OrderStore interface {
 	GetOrderByID(id string) (*model.Order, error)
 	ChangeOrderStatus(orderID string, status int) error
 	GetAllUserOrders(userID primitive.ObjectID) (*[]model.Order, error)
+	ChangeOrderAcceptTime(orderID string, time time.Time) error
 }
 
 type CommentStore interface {

@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/net/context"
+	"time"
 )
 
 type OrderStore struct {
@@ -67,4 +68,14 @@ func (orderStore *OrderStore) GetAllUserOrders(userID primitive.ObjectID) (*[]mo
 		return nil, err
 	}
 	return &result, err
+}
+
+func (orderStore *OrderStore) ChangeOrderAcceptTime(orderID string, time time.Time) error {
+	oid, err := primitive.ObjectIDFromHex(orderID)
+	if err != nil {
+		return nil
+	}
+	newRes := bson.M{"accept_time": time}
+	_, err = orderStore.db.UpdateOne(context.TODO(), bson.M{"_id": oid}, bson.M{"$set": newRes})
+	return err
 }

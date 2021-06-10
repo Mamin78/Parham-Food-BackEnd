@@ -8,7 +8,7 @@ type Food struct {
 
 	Name         string  `json:"name" bson:"name"`
 	CanBeOrdered bool    `json:"can_be_ordered" bson:"can_be_ordered"`
-	//Rate         float64 `json:"rate" bson:"rate"`
+	Rate         float64 `json:"rate" bson:"rate"`
 	Price        float64 `json:"price" bson:"price"`
 
 	Comments []primitive.ObjectID `json:"comments" bson:"comments"`
