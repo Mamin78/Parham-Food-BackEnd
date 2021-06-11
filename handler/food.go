@@ -21,12 +21,13 @@ func (h *Handler) CreateFood(c echo.Context) error {
 
 	food := new(model.Food)
 	food.ID = primitive.NewObjectID()
-	//food.RestaurantName = res.Name
 	food.RestaurantID = res.ID
+	food.CanBeOrdered = true
+
 	if err := c.Bind(&food); err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	err = h.foodsStore.CreateRestaurant(food)
+	err = h.foodsStore.CreateFood(food)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}

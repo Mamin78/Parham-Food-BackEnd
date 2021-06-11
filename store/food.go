@@ -19,7 +19,7 @@ func NewFoodStore(db *mongo.Collection) *FoodStore {
 	}
 }
 
-func (fs *FoodStore) CreateRestaurant(food *model.Food) error {
+func (fs *FoodStore) CreateFood(food *model.Food) error {
 	_, err := fs.db.InsertOne(context.TODO(), food)
 	return err
 }

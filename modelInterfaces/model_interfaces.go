@@ -33,7 +33,7 @@ type RestaurantStore interface {
 }
 
 type FoodStore interface {
-	CreateRestaurant(food *model.Food) error
+	CreateFood(food *model.Food) error
 	GetAllFoodsOfRestaurant(resName string) (*model.Restaurant, error)
 	GetAllFoodsOfRestaurantByID(resID primitive.ObjectID) ([]model.Food, error)
 	EnableFoodByID(foodId string) error

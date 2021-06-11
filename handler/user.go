@@ -133,6 +133,28 @@ func (h *Handler) GetUserFavoriteFoods(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, model.NewResponse(result, "", true))
 }
 
+func (h *Handler) GetHistoryOfUserOrders(c echo.Context) (err error) {
+	userPhone := stringFieldFromToken(c, "phone")
+
+	userInformation, err := h.userStore.GetUserByPhone(userPhone)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	allUserOrders, err := h.ordersStore.GetAllUserOrders(userInformation.ID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "there is some problems with foods", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	return c.JSON(http.StatusCreated, model.NewResponse(allUserOrders, "", true))
+}
+
 func getAllFoodsStaredMoreThanThree(allFoods *[]model.Food, userID primitive.ObjectID) map[primitive.ObjectID]bool {
 	foodSet := make(map[primitive.ObjectID]bool)
 	for _, food := range *allFoods {
