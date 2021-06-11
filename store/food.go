@@ -175,3 +175,29 @@ func (fs *FoodStore) GetAllFavoriteFoods(ids []primitive.ObjectID) (*[]model.Foo
 	}
 	return &result, err
 }
+
+func (fs *FoodStore) GetAllFoodsOfSomeRestaurants(ids []primitive.ObjectID) (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{"restaurant_id": bson.M{"$in": ids}}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (fs *FoodStore) GetAllFoodsOfSomeRestaurantsAndSpecificFoodName(ids []primitive.ObjectID, name string) (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{"restaurant_id": bson.M{"$in": ids}, "name": name}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}

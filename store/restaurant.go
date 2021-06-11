@@ -87,3 +87,16 @@ func (rs *RestaurantStore) AddOrderToRestaurantByID(newOrder *model.Order, res *
 	_, err := rs.db.UpdateOne(context.TODO(), bson.M{"_id": res.ID}, bson.M{"$set": newRes})
 	return err
 }
+
+func (rs *RestaurantStore) GetAllRestaurants() (*[]model.Restaurant, error) {
+	var result []model.Restaurant
+	query := bson.M{}
+	res, err := rs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}

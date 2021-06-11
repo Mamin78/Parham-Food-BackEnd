@@ -30,6 +30,7 @@ type RestaurantStore interface {
 	DeleteFoodFromRestaurant(foodID string, res *model.Restaurant) error
 	AddOrderToRestaurantByID(newOrder *model.Order, res *model.Restaurant) error
 	GetRestaurantByPrimitiveTypeId(id primitive.ObjectID) (*model.Restaurant, error)
+	GetAllRestaurants() (*[]model.Restaurant, error)
 }
 
 type FoodStore interface {
@@ -47,6 +48,8 @@ type FoodStore interface {
 	GetFoodsWithSpecificResAndName(resID primitive.ObjectID, foodName string) (*[]model.Food, error)
 	GetAllFoods() (*[]model.Food, error)
 	GetAllFavoriteFoods(ids []primitive.ObjectID) (*[]model.Food, error)
+	GetAllFoodsOfSomeRestaurants(ids []primitive.ObjectID) (*[]model.Food, error)
+	GetAllFoodsOfSomeRestaurantsAndSpecificFoodName(ids []primitive.ObjectID, name string) (*[]model.Food, error)
 }
 
 type OrderStore interface {
