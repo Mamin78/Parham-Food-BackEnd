@@ -41,7 +41,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
 				} else {
-					foods, err := h.foodsStore.GetAllFoodsOfRestaurant(query.RestaurantName)
+					foods, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
 					if err != nil {
 						if err == mgo.ErrNotFound {
 							return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
@@ -86,34 +86,76 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 		}
 	} else {
 		if query.RestaurantName != "" {
-
+			res, err := h.restaurantStore.GetRestaurantByName(query.RestaurantName)
+			if err != nil {
+				if err == mgo.ErrNotFound {
+					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+				}
+				return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+			}
+			if query.FoodName == "" {
+				foods, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
+				if err != nil {
+					if err == mgo.ErrNotFound {
+						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+					}
+					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+				}
+				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+			} else {
+				foods, err := h.foodsStore.GetAllFoodsOfRestaurantWithSpecificFoodName(query.FoodName, res.ID)
+				if err != nil {
+					if err == mgo.ErrNotFound {
+						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+					}
+					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+				}
+				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+			}
 		} else {
-
+			if query.FoodName == "" {
+				foods, err := h.foodsStore.GetAllFoods()
+				if err != nil {
+					if err == mgo.ErrNotFound {
+						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+					}
+					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+				}
+				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+			} else {
+				foods, err := h.foodsStore.GetAllFoodsWithSpecificFoodName(query.FoodName)
+				if err != nil {
+					if err == mgo.ErrNotFound {
+						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+					}
+					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+				}
+				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+			}
 		}
 	}
-	return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 }
 
-func (h *Handler) temp(c echo.Context) (err error) {
-	restaurants, err := h.restaurantStore.GetAllRestaurants()
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
-		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
-	}
-
-	IDs := allRestaurantsWithSpecificServiceArea(restaurants, 5)
-
-	foods, err := h.foodsStore.GetAllFoodsOfSomeRestaurants(IDs)
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
-		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
-	}
-	return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
-}
+//func (h *Handler) temp(c echo.Context) (err error) {
+//	restaurants, err := h.restaurantStore.GetAllRestaurants()
+//	if err != nil {
+//		if err == mgo.ErrNotFound {
+//			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+//		}
+//		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+//	}
+//
+//	IDs := allRestaurantsWithSpecificServiceArea(restaurants, 5)
+//
+//	foods, err := h.foodsStore.GetAllFoodsOfSomeRestaurants(IDs)
+//	if err != nil {
+//		if err == mgo.ErrNotFound {
+//			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid restaurant", false))
+//		}
+//		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+//	}
+//	return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+//}
 
 func isInServiceAreas(res *model.Restaurant, area int) bool {
 	for _, serviceArea := range res.ServiceArea {

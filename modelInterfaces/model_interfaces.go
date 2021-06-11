@@ -35,7 +35,7 @@ type RestaurantStore interface {
 
 type FoodStore interface {
 	CreateFood(food *model.Food) error
-	GetAllFoodsOfRestaurant(resName string) (*model.Restaurant, error)
+	GetAllFoodsOfRestaurant(resName string) (*[]model.Food, error)
 	GetAllFoodsOfRestaurantByID(resID primitive.ObjectID) ([]model.Food, error)
 	EnableFoodByID(foodId string) error
 	DisableFoodByID(foodId string) error
@@ -50,6 +50,8 @@ type FoodStore interface {
 	GetAllFavoriteFoods(ids []primitive.ObjectID) (*[]model.Food, error)
 	GetAllFoodsOfSomeRestaurants(ids []primitive.ObjectID) (*[]model.Food, error)
 	GetAllFoodsOfSomeRestaurantsAndSpecificFoodName(ids []primitive.ObjectID, name string) (*[]model.Food, error)
+	GetAllFoodsWithSpecificFoodName(name string) (*[]model.Food, error)
+	GetAllFoodsOfRestaurantWithSpecificFoodName(name string, resID primitive.ObjectID) (*[]model.Food, error)
 }
 
 type OrderStore interface {

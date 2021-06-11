@@ -24,10 +24,8 @@ func (fs *FoodStore) CreateFood(food *model.Food) error {
 	return err
 }
 
-func (fs *FoodStore) GetAllFoodsOfRestaurant(resName string) (*model.Restaurant, error) {
-	var u model.Restaurant
+func (fs *FoodStore) GetAllFoodsOfRestaurant(resName string) (*[]model.Food, error) {
 	var uu []model.Food
-	//query := bson.M{"_id": bson.M{"$in": usernames}}
 	query := bson.M{"restaurant_name": resName}
 	foods, err := fs.db.Find(context.TODO(), query)
 
@@ -37,10 +35,7 @@ func (fs *FoodStore) GetAllFoodsOfRestaurant(resName string) (*model.Restaurant,
 	if err = foods.All(context.TODO(), &uu); err != nil {
 		return nil, err
 	}
-	fmt.Println("foods")
-	fmt.Println(uu)
-	fmt.Println("foods")
-	return &u, err
+	return &uu, err
 }
 
 func (fs *FoodStore) GetAllFoodsOfRestaurantByID(resID primitive.ObjectID) ([]model.Food, error) {
@@ -192,6 +187,32 @@ func (fs *FoodStore) GetAllFoodsOfSomeRestaurants(ids []primitive.ObjectID) (*[]
 func (fs *FoodStore) GetAllFoodsOfSomeRestaurantsAndSpecificFoodName(ids []primitive.ObjectID, name string) (*[]model.Food, error) {
 	var result []model.Food
 	query := bson.M{"restaurant_id": bson.M{"$in": ids}, "name": name}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (fs *FoodStore) GetAllFoodsWithSpecificFoodName(name string) (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{"name": name}
+	res, err := fs.db.Find(context.TODO(), query)
+	if err != nil {
+		return nil, err
+	}
+	if err = res.All(context.TODO(), &result); err != nil {
+		return nil, err
+	}
+	return &result, err
+}
+
+func (fs *FoodStore) GetAllFoodsOfRestaurantWithSpecificFoodName(name string, resID primitive.ObjectID) (*[]model.Food, error) {
+	var result []model.Food
+	query := bson.M{"name": name, "restaurant_id": resID}
 	res, err := fs.db.Find(context.TODO(), query)
 	if err != nil {
 		return nil, err

@@ -22,7 +22,7 @@ const (
 
 func (h *Handler) RegisterRoutes(g *echo.Group) {
 
-	g.GET("/tempp", h.temp)
+	g.POST("/search", h.Search)
 	g.GET("/", h.BaseRouter)
 
 	//sign up and login part!
