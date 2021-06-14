@@ -29,19 +29,19 @@ func NewHandler(userStore modelInterfaces.UserStore, restaurantStore modelInterf
 	}
 }
 
-func NewHandlerNotPointer(userStore modelInterfaces.UserStore, restaurantStore modelInterfaces.RestaurantStore, foodsStore modelInterfaces.FoodStore, ordersStore modelInterfaces.OrderStore, commentsStore modelInterfaces.CommentStore, managerCommentsStore modelInterfaces.ManagerCommentStore) (handler *Handler) {
-	var h *Handler
-	h.userStore = userStore
-	h.restaurantStore = restaurantStore
-	h.foodsStore = foodsStore
-	h.ordersStore = ordersStore
-	h.commentsStore = commentsStore
-	h.managerCommentsStore = managerCommentsStore
-	return h
-}
+//func NewHandlerNotPointer(userStore modelInterfaces.UserStore, restaurantStore modelInterfaces.RestaurantStore, foodsStore modelInterfaces.FoodStore, ordersStore modelInterfaces.OrderStore, commentsStore modelInterfaces.CommentStore, managerCommentsStore modelInterfaces.ManagerCommentStore) (handler *Handler) {
+//	var h *Handler
+//	h.userStore = userStore
+//	h.restaurantStore = restaurantStore
+//	h.foodsStore = foodsStore
+//	h.ordersStore = ordersStore
+//	h.commentsStore = commentsStore
+//	h.managerCommentsStore = managerCommentsStore
+//	return h
+//}
 
 func (h *Handler) BaseRouter(c echo.Context) error {
-	return c.JSON(http.StatusCreated, errors.New("welcome to parhamfood"))
+	return c.JSON(http.StatusCreated, errors.New("welcome to Parham food"))
 }
 
 const (
