@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -75,7 +74,7 @@ func (h *Handler) ManagerLogin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	fmt.Println(res)
+	//fmt.Println(res)
 	//here we should check the password!
 	if res.Password != manager.Password {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "password is incorrect.", false))
@@ -115,14 +114,14 @@ func (h *Handler) GetRestaurantInfo(c echo.Context) (err error) {
 	}
 	res.Password = ""
 
-	temp, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant!", false))
-		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
-	}
-	fmt.Println(temp)
+	//temp, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
+	//if err != nil {
+	//	if err == mgo.ErrNotFound {
+	//		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant!", false))
+	//	}
+	//	return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	//}
+	//fmt.Println(temp)
 	return c.JSON(http.StatusCreated, model.NewResponse(res, "", true))
 }
 
