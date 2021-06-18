@@ -16,16 +16,23 @@ func (h *Handler) userSignUp(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	// Validate
-	if user.PhoneNumber == "" || user.Password == "" || len(user.Password) < 8 {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid phone or password", false))
+	if user.PhoneNumber == "" || user.Password == "" {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "phone number or password must not be empty", false))
+	}
+
+	if err := c.Validate(user); err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Invalid Phone number!", false))
+	}
+
+	if err := CheckPasswordLever(user.Password); err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, err.Error(), false))
 	}
 
 	user.ID = primitive.NewObjectID()
 	user.Credit = 1000000
 	err := h.userStore.CreateUser(user)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This user existed.", false))
 	}
 	user.Password = ""
 	return c.JSON(http.StatusCreated, model.NewResponse(user, "", true))

@@ -8,7 +8,7 @@ import (
 type Restaurant struct {
 	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 
-	Email    string `json:"email,omitempty" bson:"email"`
+	Email    string `json:"email,omitempty" bson:"email" validate:"email"`
 	Password string `json:"password" bson:"password"`
 
 	Name              string        `json:"name" bson:"name"`
