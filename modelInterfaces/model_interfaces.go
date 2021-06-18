@@ -52,6 +52,7 @@ type FoodStore interface {
 	GetAllFoodsOfSomeRestaurantsAndSpecificFoodName(ids []primitive.ObjectID, name string) (*[]model.Food, error)
 	GetAllFoodsWithSpecificFoodName(name string) (*[]model.Food, error)
 	GetAllFoodsOfRestaurantWithSpecificFoodName(name string, resID primitive.ObjectID) (*[]model.Food, error)
+	UpdateFoodRate(foodId string, rate float64) error
 }
 
 type OrderStore interface {

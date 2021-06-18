@@ -222,3 +222,13 @@ func (fs *FoodStore) GetAllFoodsOfRestaurantWithSpecificFoodName(name string, re
 	}
 	return &result, err
 }
+
+func (fs *FoodStore) UpdateFoodRate(foodId string, rate float64) error {
+	oid, err := primitive.ObjectIDFromHex(foodId)
+	if err != nil {
+		return nil
+	}
+	newRes := bson.M{"rate": rate}
+	_, err = fs.db.UpdateOne(context.TODO(), bson.M{"_id": oid}, bson.M{"$set": newRes})
+	return err
+}
