@@ -55,6 +55,25 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
+	res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(resID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	currentTime := time.Now()
+
+	today := makeDate(currentTime)
+	start := makeDuration(res.StartWorkingHours)
+	end := makeDuration(res.EndWorkingHours)
+	startT := today.Add(start)
+	endT := today.Add(end)
+	if !currentTime.After(startT) || !currentTime.Before(endT) {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant is closed", false))
+	}
+
 	cost := calculateOrderPrice(foods, userOrder.Foods)
 	if cost > user.Credit {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "sorry, your credit is not sufficient", false))
@@ -74,14 +93,6 @@ func (h *Handler) CreateOrder(c echo.Context) error {
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user!", false))
-		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
-	}
-
-	res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(resID)
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "restaurant not found", false))
 		}
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
@@ -300,4 +311,19 @@ func calculateOrderPrice(foods *[]model.Food, orderFoods []model.FoodOrder) floa
 		cost += float64(food.Number) * price[food.FoodID]
 	}
 	return cost
+}
+
+func makeDate(currentTime time.Time) time.Time {
+	t1 := time.Duration(currentTime.Hour()) * time.Hour
+	t1 += time.Duration(currentTime.Minute()) * time.Minute
+	t1 += time.Duration(currentTime.Second()) * time.Second
+	temp := currentTime.Add(-t1)
+	return temp
+}
+
+func makeDuration(tm time.Time) time.Duration {
+	t1 := time.Duration(tm.Hour()) * time.Hour
+	t1 += time.Duration(tm.Minute()) * time.Minute
+	t1 += time.Duration(tm.Second()) * time.Second
+	return t1
 }

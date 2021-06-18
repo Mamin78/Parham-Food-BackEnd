@@ -6,7 +6,7 @@ import (
 	"github.com/Mamin78/Parham-Food-BackEnd/router"
 	"github.com/Mamin78/Parham-Food-BackEnd/store"
 	_ "github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
+	"log"
 	"os"
 )
 
@@ -39,4 +39,8 @@ func main() {
 	h.RegisterRoutes(g)
 
 	r.Logger.Fatal(r.Start("0.0.0.0:" + port))
+
+	//form := "3:04"
+	//t2, _ := time.Parse(form, "8:41")
+	//fmt.Println(t2)
 }
