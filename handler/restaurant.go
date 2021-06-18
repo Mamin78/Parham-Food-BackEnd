@@ -146,7 +146,7 @@ func (h *Handler) GetAllFoodsOfRestaurant(c echo.Context) (err error) {
 		}
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, model.NewResponse(foods, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFoods(h, &foods), "", true))
 }
 
 func stringFieldFromToken(c echo.Context, field string) string {
@@ -155,4 +155,23 @@ func stringFieldFromToken(c echo.Context, field string) string {
 		return ""
 	}
 	return field
+}
+
+func addRestaurantNameToFoods(h *Handler, foods *[]model.Food) []model.FoodAsResponse {
+	var result []model.FoodAsResponse
+	for _, v := range *foods {
+		foodWithResName := model.CreateRepFoodWithResName(v)
+
+		res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(v.RestaurantID)
+		if err != nil {
+			if err == mgo.ErrNotFound {
+				return nil
+			}
+			return nil
+		}
+
+		foodWithResName.RestaurantName = res.Name
+		result = append(result, *foodWithResName)
+	}
+	return result
 }

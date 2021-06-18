@@ -39,7 +39,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 						}
 						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 					}
-					return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+					return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,foods), "", true))
 				} else {
 					foods, err := h.foodsStore.GetAllFoodsOfRestaurantByID(res.ID)
 					if err != nil {
@@ -48,7 +48,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 						}
 						return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 					}
-					return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+					return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,&foods), "", true))
 				}
 			} else {
 				return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Sorry, this restaurant cant service to you at this area", false))
@@ -72,7 +72,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 				}
-				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,foods), "", true))
 			} else {
 				foods, err := h.foodsStore.GetAllFoodsOfSomeRestaurantsAndSpecificFoodName(IDs, query.FoodName)
 				if err != nil {
@@ -81,7 +81,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 				}
-				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,foods), "", true))
 			}
 		}
 	} else {
@@ -101,7 +101,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 				}
-				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,&foods), "", true))
 			} else {
 				foods, err := h.foodsStore.GetAllFoodsOfRestaurantWithSpecificFoodName(query.FoodName, res.ID)
 				if err != nil {
@@ -110,7 +110,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 				}
-				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,foods), "", true))
 			}
 		} else {
 			if query.FoodName == "" {
@@ -121,7 +121,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 				}
-				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,foods), "", true))
 			} else {
 				foods, err := h.foodsStore.GetAllFoodsWithSpecificFoodName(query.FoodName)
 				if err != nil {
@@ -130,7 +130,7 @@ func doQuery(h *Handler, c echo.Context, query *model.Search) (err error) {
 					}
 					return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 				}
-				return c.JSON(http.StatusOK, model.NewResponse(foods, "", true))
+				return c.JSON(http.StatusOK, model.NewResponse(addRestaurantNameToFoods(h,foods), "", true))
 			}
 		}
 	}

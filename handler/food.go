@@ -36,7 +36,7 @@ func (h *Handler) CreateFood(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFood(h, food), "", true))
 }
 
 func (h *Handler) DisableFood(c echo.Context) error {
@@ -57,7 +57,7 @@ func (h *Handler) DisableFood(c echo.Context) error {
 		}
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFood(h, food), "", true))
 }
 
 func (h *Handler) EnableFood(c echo.Context) error {
@@ -78,7 +78,7 @@ func (h *Handler) EnableFood(c echo.Context) error {
 		}
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFood(h, food), "", true))
 }
 
 func (h *Handler) DeleteFood(c echo.Context) error {
@@ -133,7 +133,7 @@ func (h *Handler) GetFoodInformation(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	return c.JSON(http.StatusCreated, model.NewResponse(food, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFood(h, food), "", true))
 }
 
 func (h *Handler) GetFoodComments(c echo.Context) error {
@@ -167,4 +167,20 @@ func addUserNameToComment(h *Handler, comments *[]model.Comment) []model.Comment
 		result = append(result, *commentWithUserName)
 	}
 	return result
+}
+
+func addRestaurantNameToFood(h *Handler, food *model.Food) *model.FoodAsResponse {
+	foodWithResName := model.CreateRepFoodWithResName(*food)
+
+	res, err := h.restaurantStore.GetRestaurantByPrimitiveTypeId(food.RestaurantID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return nil
+		}
+		return nil
+	}
+
+	foodWithResName.RestaurantName = res.Name
+
+	return foodWithResName
 }

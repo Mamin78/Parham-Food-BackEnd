@@ -144,7 +144,7 @@ func (h *Handler) GetUserFavoriteFoods(c echo.Context) (err error) {
 		}
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
-	return c.JSON(http.StatusCreated, model.NewResponse(result, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFoods(h,result), "", true))
 }
 
 func (h *Handler) GetHistoryOfUserOrders(c echo.Context) (err error) {
