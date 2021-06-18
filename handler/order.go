@@ -229,6 +229,41 @@ func (h *Handler) GetOrderState(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, model.NewResponse(order, "", true))
 }
 
+func (h *Handler) GetAllFoodsOfOrder(c echo.Context) error {
+	userPhone := stringFieldFromToken(c, "phone")
+	orderID := c.Param("order_id")
+
+	user, err := h.userStore.GetUserByPhone(userPhone)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	order, err := h.ordersStore.GetOrderByID(orderID)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid order", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	if user.ID != order.UserID {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "you can not see information of this order.", false))
+	}
+
+	foods, err := h.foodsStore.GetAllFoodsByIDs(order.Foods)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid foods", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+	}
+
+	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFoods(h, foods), "", true))
+}
+
 func IsFromOneRestaurant(foods *[]model.Food) (primitive.ObjectID, bool) {
 	set := make(map[primitive.ObjectID]bool)
 	var no primitive.ObjectID

@@ -88,6 +88,7 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	userOrderGroup := userGroup.Group("/order")
 	userOrderGroup.POST("", h.CreateOrder)
+	userOrderGroup.GET("/:order_id"+"/foods", h.GetAllFoodsOfOrder)
 	userOrderGroup.GET("/status"+"/:order_id", h.GetOrderState)
 	userOrderGroup.GET("/history", h.GetHistoryOfUserOrders)
 
