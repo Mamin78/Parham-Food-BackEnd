@@ -147,5 +147,24 @@ func (h *Handler) GetFoodComments(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	return c.JSON(http.StatusCreated, model.NewResponse(comments, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(addUserNameToComment(h, comments), "", true))
+}
+
+func addUserNameToComment(h *Handler, comments *[]model.Comment) []model.CommentAsResponse {
+	var result []model.CommentAsResponse
+	for _, v := range *comments {
+		commentWithUserName := model.CreateRespCommentFromComment(v)
+
+		user, err := h.userStore.GetUserByPrimitiveID(v.UserID)
+		if err != nil {
+			if err == mgo.ErrNotFound {
+				return nil
+			}
+			return nil
+		}
+
+		commentWithUserName.UserName = user.Name
+		result = append(result, *commentWithUserName)
+	}
+	return result
 }

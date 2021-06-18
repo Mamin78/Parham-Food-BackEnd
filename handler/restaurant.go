@@ -78,8 +78,6 @@ func (h *Handler) ManagerLogin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	//fmt.Println(res)
-	//here we should check the password!
 	//here we should check the password!
 	if !PasswordsAreSame(res.Password, manager.Password) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "password is incorrect.", false))

@@ -47,7 +47,7 @@ func (cs *CommentStore) GetCommentByID(ID primitive.ObjectID) (*model.Comment, e
 }
 
 func (cs *CommentStore) AddManagerReply(managerReply model.ManagerReply, commentId primitive.ObjectID) error {
-	newRes := bson.M{"manager_reply": managerReply}
+	newRes := bson.M{"reply": managerReply}
 	_, err := cs.db.UpdateOne(context.TODO(), bson.M{"_id": commentId}, bson.M{"$set": newRes})
 	return err
 }

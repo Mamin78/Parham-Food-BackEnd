@@ -85,9 +85,6 @@ func (h *Handler) UpdateUserInfo(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	if userInformation.PhoneNumber != newUser.PhoneNumber {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "you can't change the information of this user", false))
-	}
 	err = h.userStore.UpdateUserInfoByPhone(userPhone, newUser)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))

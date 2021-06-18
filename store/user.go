@@ -45,6 +45,12 @@ func (us *UserStore) GetUserByID(userID string) (*model.User, error) {
 	return &u, err
 }
 
+func (us *UserStore) GetUserByPrimitiveID(userID primitive.ObjectID) (*model.User, error) {
+	var u model.User
+	err := us.db.FindOne(context.TODO(), bson.M{"_id": userID}).Decode(&u)
+	return &u, err
+}
+
 func (us *UserStore) UpdateUserInfoByID(userID string, user *model.User) error {
 	oid, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {

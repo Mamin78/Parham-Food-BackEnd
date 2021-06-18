@@ -18,6 +18,8 @@ type UserStore interface {
 	AddOrderToUserByID(newOrder *model.Order, user *model.User) error
 
 	AddCommentToUser(commentId primitive.ObjectID, user *model.User) error
+
+	GetUserByPrimitiveID(userID primitive.ObjectID) (*model.User, error)
 }
 
 type RestaurantStore interface {
