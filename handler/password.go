@@ -28,7 +28,7 @@ func CheckPasswordLever(pass string) error {
 	return nil
 }
 
-func HashedPassword(plain string) (string, error) {
+func PasswordToHash(plain string) (string, error) {
 	if len(plain) == 0 {
 		return "", errors.New("password can not be empty")
 	}

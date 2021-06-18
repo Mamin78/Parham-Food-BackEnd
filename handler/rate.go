@@ -49,7 +49,7 @@ func (h *Handler) AddUserRateToFood(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This food does not exist", false))
 	}
-	
+
 	if !FoodIsInOrders(orders, food.ID) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "you have not bought this food", false))
 	}

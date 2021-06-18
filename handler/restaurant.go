@@ -14,21 +14,25 @@ func (h *Handler) CreateRestaurantManager(c echo.Context) error {
 	manager := new(model.BaseManager)
 	if err := c.Bind(&manager); err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
-
+	}
+	if manager.Email == "" {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "phone number must not be empty", false))
 	}
 
-	// Validate
-	if manager.Email == "" || manager.Password == "" || len(manager.Password) < 8 {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid email or password", false))
-
+	if err := CheckPasswordLever(manager.Password); err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, err.Error(), false))
 	}
 
 	res := new(model.Restaurant)
 	res.ID = primitive.NewObjectID()
 	res.Email = manager.Email
-	res.Password = manager.Password
+	pass, err := PasswordToHash(manager.Password)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This user existed.", false))
+	}
+	res.Password = pass
 
-	err := h.restaurantStore.CreateRestaurant(res)
+	err = h.restaurantStore.CreateRestaurant(res)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
@@ -76,7 +80,8 @@ func (h *Handler) ManagerLogin(c echo.Context) error {
 
 	//fmt.Println(res)
 	//here we should check the password!
-	if res.Password != manager.Password {
+	//here we should check the password!
+	if !PasswordsAreSame(res.Password, manager.Password) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "password is incorrect.", false))
 	}
 	return c.JSON(http.StatusCreated, model.NewResponse(newManagerResponse(manager), "", true))

@@ -16,8 +16,8 @@ func (h *Handler) userSignUp(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
-	if user.PhoneNumber == "" || user.Password == "" {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "phone number or password must not be empty", false))
+	if user.PhoneNumber == ""{
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "phone number must not be empty", false))
 	}
 
 	if err := c.Validate(user); err != nil {
@@ -30,7 +30,13 @@ func (h *Handler) userSignUp(c echo.Context) error {
 
 	user.ID = primitive.NewObjectID()
 	user.Credit = 1000000
-	err := h.userStore.CreateUser(user)
+	pass, err := PasswordToHash(user.Password)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This user existed.", false))
+	}
+	user.Password = pass
+
+	err = h.userStore.CreateUser(user)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This user existed.", false))
 	}
@@ -44,6 +50,10 @@ func (h *Handler) UserLogin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
+	if err := c.Validate(user); err != nil {
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Invalid Phone number!", false))
+	}
+
 	userInformation, err := h.userStore.GetUserByPhone(user.PhoneNumber)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -53,7 +63,7 @@ func (h *Handler) UserLogin(c echo.Context) error {
 	}
 
 	//here we should check the password!
-	if userInformation.Password != user.Password {
+	if !PasswordsAreSame(userInformation.Password, user.Password) {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "password is incorrect.", false))
 	}
 	return c.JSON(http.StatusCreated, model.NewResponse(newUserResponse(userInformation), "", true))
