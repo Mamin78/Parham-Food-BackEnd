@@ -12,7 +12,12 @@ var clientInstanceError error
 var mongoOnce sync.Once
 
 const (
+<<<<<<< HEAD
 	PATH = "mongodb://localhost:27017"
+=======
+	//PATH = "mongodb://localhost:27017"
+	PATH = "mongodb+srv://parham_food:ahaphf0098@cluster0.3ir6g.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+>>>>>>> 7126080 (mongo atlas)
 )
 
 func GetMongoClient() (*mongo.Client, error) {
