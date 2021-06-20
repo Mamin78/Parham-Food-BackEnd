@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -45,21 +46,23 @@ func (h *Handler) userSignUp(c echo.Context) error {
 }
 
 func (h *Handler) UserLogin(c echo.Context) error {
+	fmt.Println(c)
 	user := new(model.User)
 	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request1", false))
 	}
 
-	if err := c.Validate(user); err != nil {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Invalid Phone number!", false))
-	}
+	//fmt.Println(user)
+	//if err := c.Validate(user); err != nil {
+	//	return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "Invalid Phone number!", false))
+	//}
 
 	userInformation, err := h.userStore.GetUserByPhone(user.PhoneNumber)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
 		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid user", false))
 	}
 
 	//here we should check the password!

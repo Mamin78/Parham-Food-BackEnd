@@ -8,7 +8,7 @@ type User struct {
 	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 
 	Name        string  `json:"name" bson:"name"`
-	PhoneNumber string  `json:"phone_number,omitempty" bson:"phone_number" validate:"e164"`
+	PhoneNumber string  `json:"phone_number,omitempty" bson:"phone_number"`
 	Password    string  `json:"password" bson:"password"`
 	Credit      float64 `json:"credit" bson:"credit"`
 	Area        int     `json:"area" bson:"area"`

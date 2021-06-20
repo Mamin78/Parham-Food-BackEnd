@@ -14,7 +14,7 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		// default Port
-		port = "8000"
+		port = "8080"
 	}
 
 	r := router.New()
