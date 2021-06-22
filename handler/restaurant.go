@@ -16,7 +16,7 @@ const form = "3:04"
 func (h *Handler) CreateRestaurantManager(c echo.Context) error {
 	manager := new(model.BaseManager)
 	if err := c.Bind(&manager); err != nil {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request1", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 	if manager.Email == "" {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "phone number must not be empty", false))
@@ -39,7 +39,7 @@ func (h *Handler) CreateRestaurantManager(c echo.Context) error {
 	err = h.restaurantStore.CreateRestaurant(res)
 	if err != nil {
 		fmt.Println(err.Error())
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request2", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This email is already registered", false))
 	}
 
 	return c.JSON(http.StatusCreated, model.NewResponse(newManagerResponse(manager), "", true))
@@ -53,11 +53,11 @@ func (h *Handler) CreateRestaurant(c echo.Context) error {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Manager", false))
 		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request1", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Manager", false))
 	}
 	if err := c.Bind(&restaurant); err != nil {
 		fmt.Println(err.Error())
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request2", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
 	}
 
 	model.NewRestaurantFromBaseRes(res, restaurant)
@@ -71,7 +71,7 @@ func (h *Handler) CreateRestaurant(c echo.Context) error {
 	res.BaseFoodTime = res.BaseFoodTime * time.Minute
 	err = h.restaurantStore.UpdateInformation(managerEmail, res)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request3", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant", false))
 	}
 	res.Password = ""
 
