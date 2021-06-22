@@ -42,7 +42,7 @@ func (h *Handler) userSignUp(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "This user existed.", false))
 	}
 	user.Password = ""
-	return c.JSON(http.StatusCreated, model.NewResponse(user, "", true))
+	return c.JSON(http.StatusCreated, model.NewResponse(newUserResponse(user), "", true))
 }
 
 func (h *Handler) UserLogin(c echo.Context) error {

@@ -126,6 +126,21 @@ func (h *Handler) EditRestaurantInfo(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, model.NewResponse(newRes, "", true))
 }
 
+func (h *Handler) GetRestaurantInfoByToken(c echo.Context) (err error) {
+	managerEmail := stringFieldFromToken(c, "email")
+
+	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant!", false))
+		}
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant!", false))
+	}
+	res.Password = ""
+
+	return c.JSON(http.StatusCreated, model.NewResponse(res, "", true))
+}
+
 func (h *Handler) GetRestaurantInfo(c echo.Context) (err error) {
 	resName := c.Param("restaurant_name")
 	res, err := h.restaurantStore.GetRestaurantByName(resName)
