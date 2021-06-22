@@ -3,8 +3,10 @@ module github.com/Mamin78/Parham-Food-BackEnd
 go 1.15
 
 require (
+	github.com/aws/aws-sdk-go v1.38.64 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/klauspost/compress v1.13.1 // indirect
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/labstack/gommon v0.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
