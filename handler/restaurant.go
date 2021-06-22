@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const form = "3:04"
+const form = "15:04"
 
 func (h *Handler) CreateRestaurantManager(c echo.Context) error {
 	manager := new(model.BaseManager)
