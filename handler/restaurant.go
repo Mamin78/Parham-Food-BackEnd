@@ -156,8 +156,10 @@ func (h *Handler) GetRestaurantInfo(c echo.Context) (err error) {
 }
 
 func (h *Handler) GetAllFoodsOfRestaurant(c echo.Context) (err error) {
-	resName := c.Param("restaurant_name")
-	res, err := h.restaurantStore.GetRestaurantByName(resName)
+	//resName := c.Param("restaurant_name")
+	managerEmail := stringFieldFromToken(c, "email")
+
+	res, err := h.restaurantStore.GetRestaurantByManagerEmail(managerEmail)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid Restaurant!", false))
