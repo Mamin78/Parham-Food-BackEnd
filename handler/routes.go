@@ -51,6 +51,7 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	managerGroup.PUT("/update", h.EditRestaurantInfo)
 	managerGroup.GET("/info", h.GetRestaurantInfoByToken)
 	managerGroup.GET("/food"+"/list", h.GetAllFoodsOfRestaurant)
+	
 
 	foodManager := managerGroup.Group(URLFood)
 	foodManager.POST("/add", h.CreateFood)
