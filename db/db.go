@@ -15,7 +15,7 @@ const (
 	//for local
 	//PATH = "mongodb://localhost:27017"
 	//in mongo atlas
-	PATH = "mongodb+srv://parham_food:ahaphf0098@cluster0.3ir6g.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+	PATH = "mongodb+srv://user:pass@cluster0.3ir6g.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 )
 
 func GetMongoClient() (*mongo.Client, error) {
