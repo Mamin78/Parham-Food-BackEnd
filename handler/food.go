@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Mamin78/Parham-Food-BackEnd/model"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -47,7 +48,7 @@ func (h *Handler) DisableFood(c echo.Context) error {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "food not found", false))
 	}
 
 	food, err := h.foodsStore.GetFoodByID(foodID)
@@ -55,7 +56,7 @@ func (h *Handler) DisableFood(c echo.Context) error {
 		if err == mgo.ErrNotFound {
 			return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "invalid food", false))
 		}
-		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "bad request", false))
+		return c.JSON(http.StatusBadRequest, model.NewResponse(nil, "food not found", false))
 	}
 	return c.JSON(http.StatusCreated, model.NewResponse(addRestaurantNameToFood(h, food), "", true))
 }
@@ -139,6 +140,7 @@ func (h *Handler) GetFoodInformation(c echo.Context) error {
 func (h *Handler) GetFoodComments(c echo.Context) error {
 	foodID := c.Param("food_id")
 
+	fmt.Println(foodID)
 	comments, err := h.commentsStore.GetAllFoodComments(foodID)
 	if err != nil {
 		if err == mgo.ErrNotFound {
