@@ -35,7 +35,7 @@ func (rs *RestaurantStore) GetRestaurantById(id string) (*model.Restaurant, erro
 	if err != nil {
 		return &u, nil
 	}
-	err = rs.db.FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&u)
+	err = rs.db.FindOne(context.TODO(), bson.M{"id": oid}).Decode(&u)
 	return &u, err
 }
 
